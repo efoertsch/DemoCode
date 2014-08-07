@@ -1,8 +1,6 @@
 package com.fisincorporated.democode.bluetooth;
 
 import com.fisincorporated.democode.MasterFragment;
-
-  
 import com.fisincorporated.democode.R;
 
 import java.io.IOException;

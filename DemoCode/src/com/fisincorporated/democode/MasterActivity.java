@@ -2,26 +2,15 @@ package com.fisincorporated.democode;
 
  
 
-import com.fisincorporated.interfaces.IHandleSelectedAction;
- 
-import android.annotation.TargetApi;
 import android.app.SearchManager;
-import android.app.SearchableInfo;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.SearchView.OnQueryTextListener;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+
+import com.fisincorporated.interfaces.IHandleSelectedAction;
 
 // This template is for a FragmentActivity that can implement fragments either with
 // 1 fragment for small screen (phone) or 2 fragments (parent/child) if on larger screen (tablet)
