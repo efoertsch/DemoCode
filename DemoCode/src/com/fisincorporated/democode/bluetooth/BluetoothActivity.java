@@ -6,8 +6,8 @@ import android.util.Log;
 import com.fisincorporated.democode.MasterActivity;
 
 
-public class BluetoothActvity extends MasterActivity {
-	private static final String TAG = "BluetoothActvity";
+public class BluetoothActivity extends MasterActivity {
+	private static final String TAG = "BluetoothActivity";
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
