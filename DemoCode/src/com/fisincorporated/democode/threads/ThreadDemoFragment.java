@@ -1,7 +1,6 @@
 package com.fisincorporated.democode.threads;
 
 import com.fisincorporated.democode.R;
-import com.fisincorporated.democode.threads.AsyncTaskFragment.AsyncTaskDemo;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

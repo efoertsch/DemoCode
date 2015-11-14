@@ -42,24 +42,12 @@ public class BluetoothFragment extends MasterFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-       
-      
-      /**
-       * Listing 16-1: Accessing the default Bluetooth Adapter
-       */
       BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();   
-      
-      //
       this.bluetooth = bluetooth;
     }
     @Override
  	public View onCreateView(LayoutInflater inflater, ViewGroup container,
  			Bundle savedInstanceState) {
- 		// Get views from fragment layout
- 		// Bind data to views (array adapters etc
- 		// Create/Assign listeners
- 		// Create services/timers
- 		// If this Fragment has no UI then return null.
  		Log.i(TAG, "onCreateView");
  		View view = inflater.inflate(R.layout.bluetooth, container, false);
  		getReferencedViews(view);
@@ -84,7 +72,11 @@ public class BluetoothFragment extends MasterFragment {
    	tvBluetoothStatus.append(message + lineSeparator);
    	svScrollStatus.fullScroll(View.FOCUS_DOWN);
    }
-    
+
+   public void onPause(){
+   	super.onPause();
+   	getActivity().unregisterReceiver(discoveryResult);
+   }
 
 	/**
      * Listing 16-2: Enabling Bluetooth

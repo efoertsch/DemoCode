@@ -35,8 +35,11 @@ public class MasterFragment extends Fragment {
 	public void onAttach(Activity activity) {
 		Log.i(TAG, "onAttach");
 		super.onAttach(activity);
-		// Get a reference to the parent Activity and keep it for callbacks.
-		callBacks = (IHandleSelectedAction) activity;
+		// Get a reference to the parent Activity and keep it for callbacks
+		// (if appropriate - fragment may not be listfragment, and activity may not have implemented callback).
+		if (activity instanceof IHandleSelectedAction){
+			callBacks = (IHandleSelectedAction) activity;
+		}
 	}
 	
 			

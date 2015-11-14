@@ -7,6 +7,7 @@
     <string name="edittext_field_in_fragment">EditText field in fragment</string>
     <string name="fragment_template_text">This is being displayed by FragmentTemplate. Look in logs to see order of calls.</string>
     <string name="hello">hello</string>
+    <string name="ok">OK</string>
     <string name="sqlite_open_error">An error occurred in opening the SQLite database</string>
     <string name="title_activity_activity_with_fragment_template">ActivityWithFragmentTemplate</string>
     <string name="title_item_list">Items</string>
