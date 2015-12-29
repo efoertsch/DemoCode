@@ -31,7 +31,7 @@ proguard/
 .metadata/
 
 # Mac OS X clutter
-*.DS_Store
+**.DS_Store
 
 # Windows clutter
 Thumbs.db
