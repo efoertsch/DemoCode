@@ -1,3 +1,4 @@
+<<<<<<< HEAD:app/src/main/res/layout/activity_item_list.xml
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_list"
@@ -9,3 +10,16 @@
     tools:context="com.fisincorporated.democode.threads.TheadListActivity"
     tools:layout="@android:layout/list_content" />
 
+=======
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_list"
+    android:name="com.fisincorporated.democode.demoui.DemoListFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    tools:context="com.fisincorporated.democode.threads.TheadListActivity"
+    tools:layout="@android:layout/list_content" />
+
+>>>>>>> origin/master:DemoCode/res/layout/activity_item_list.xml
