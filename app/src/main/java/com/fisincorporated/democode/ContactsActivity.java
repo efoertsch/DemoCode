@@ -1,15 +1,12 @@
 package com.fisincorporated.democode;
 
-import java.util.ArrayList;
-
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -17,9 +14,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 // from http://examples.javacodegeeks.com/android/core/provider/android-contacts-example/
 // with some modifications
-public class ContactsActivity extends ActionBarActivity {
+public class ContactsActivity extends AppCompatActivity {
 
 	private TextView outputText;
 	private ListView listView;
