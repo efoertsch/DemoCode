@@ -5,21 +5,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.os.Parcel;
-
-public class DemoList<T>  {
+/**
+ * Hold the list of demo topics being presented by the UI
+ */
+public class DemoTopicList {
 	private static final long serialVersionUID = 1L;
 	public  final static String DEMO_LIST = "com.fisincorporated.democode.threads.DEMO_LIST";
 
-	public   List<FragmentItem> ITEMS = new ArrayList<FragmentItem>();
-	public   Map<String, FragmentItem> ITEM_MAP = new HashMap<String, FragmentItem>();
+	public   List<DemoTopicInfo> ITEMS = new ArrayList<DemoTopicInfo>();
+	public   Map<String, DemoTopicInfo> ITEM_MAP = new HashMap<String, DemoTopicInfo>();
 	
-	protected   void addItem(FragmentItem item) {
+	protected   void addItem(DemoTopicInfo item) {
 		ITEMS.add(item);
 		ITEM_MAP.put(item.toString(), item);
 	}
 
-	public DemoList() {
+	public DemoTopicList() {
 		super();
 	}
 

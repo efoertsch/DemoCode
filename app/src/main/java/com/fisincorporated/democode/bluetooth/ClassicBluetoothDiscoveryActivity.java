@@ -6,8 +6,8 @@ import android.util.Log;
 import com.fisincorporated.democode.MasterActivity;
 
 
-public class BluetoothActivity extends MasterActivity {
-	private static final String TAG = "BluetoothActivity";
+public class ClassicBluetoothDiscoveryActivity extends MasterActivity {
+	private static final String TAG = "ClassicBluetoothDiscoveryActivity";
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -16,14 +16,13 @@ public class BluetoothActivity extends MasterActivity {
 
 	@Override
 	public void onSelectedAction(Bundle args) {
-		// TODO Auto-generated method stub
 		Log.w(TAG,"onSelectedAction callback called but no logic defined");
 	}
 
 	@Override
 	protected Fragment createFragment() {
 		// no arguments need to be set
-		return new BluetoothFragment();
+		return new ClassicBluetoothDiscoveryFragment();
 		
 	}
 

@@ -5,23 +5,37 @@ import android.os.Parcelable;
 
 /**
  * Info for either a demo fragment (FragmentList is null) or to drill down to
- * another list (FragmentList is not null)
+ * another list (demoListClassName is not null)
  */
-public class FragmentItem implements Parcelable {
+public class DemoTopicInfo implements Parcelable {
 	private String description;
 	private String activity;
 	private String fragment;
 	private String demoListClassName;
 
-	public FragmentItem(String description, String activity, String fragment,
-			String demoList) {
+	public DemoTopicInfo(String description, String activity, String fragment,
+						 String demoList) {
 		super();
 		this.description = description;
 		this.activity = activity;
 		this.fragment = fragment;
 		this.demoListClassName = demoList;
-		// this.demoList = demoListClassName;
 	}
+
+	private DemoTopicInfo(Parcel in) {
+		readFromParcel(in);
+	}
+
+	public static final Parcelable.Creator<DemoTopicInfo> CREATOR
+			= new Parcelable.Creator<DemoTopicInfo>() {
+		public DemoTopicInfo createFromParcel(Parcel in) {
+			return new DemoTopicInfo(in);
+		}
+
+		public DemoTopicInfo[] newArray(int size) {
+			return new DemoTopicInfo[size];
+		}
+	};
 
 	@Override
 	public String toString() {
@@ -62,7 +76,6 @@ public class FragmentItem implements Parcelable {
 
 	@Override
 	public int describeContents() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 }

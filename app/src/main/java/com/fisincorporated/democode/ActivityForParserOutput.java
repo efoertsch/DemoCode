@@ -1,17 +1,16 @@
 package com.fisincorporated.democode;
 
-import com.fisincorporated.interfaces.ICallbackTemplate;
-
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.fisincorporated.interfaces.ICallbackTemplate;
 
-public class ActivityForParserOutput extends ActionBarActivity implements ICallbackTemplate {
+
+public class ActivityForParserOutput extends AppCompatActivity implements ICallbackTemplate {
 	private TextView textView;
 	private XMLPullParserTemplate xmlPullParser;
 	private String lineSeparator = System.getProperty("line.separator");
