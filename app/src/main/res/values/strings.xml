@@ -20,6 +20,11 @@
     <string name="turn_off">Turn Off</string>
     <string name="list_paired_devices">List paired Devices</string>
     <string name="search_new_devices">Search new Devices / Cancel</string>
+
+    <!-- Bluetooth strings-->
+    <string name="turn_on_bluetooth_discovery">Turn on discovery</string>
+    <string name="turn_off_bluetooth_discovery">Turn off discovery</string>
+
     
 
 </resources>

@@ -12,8 +12,8 @@ public class BluetoothDemoTopicList extends DemoTopicList {
 
     public BluetoothDemoTopicList() {
         // !!! Don't add .class postfix. This will give ClassNotFoundException,
-        addItem(new DemoTopicInfo("Bluetooth Demo", "com.fisincorporated.democode.bluetooth.BluetoothActivity", "com.fisincorporated.democode.bluetooth.BluetoothFragment", null));
-        addItem(new DemoTopicInfo("Bluetooth Demo2", "com.fisincorporated.democode.bluetooth.BluetoothActivity2", "com.fisincorporated.democode.bluetooth.BluetoothFragment", null));
+        addItem(new DemoTopicInfo("Turn on/off Classic BT Discovery", "com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryActivity", "com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryFragment", null));
+        addItem(new DemoTopicInfo("Bluetooth Demo2", "com.fisincorporated.democode.bluetooth.BluetoothActivity2", "com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryFragment", null));
 
     }
 }

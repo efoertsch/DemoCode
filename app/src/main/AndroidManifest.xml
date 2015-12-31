@@ -47,7 +47,7 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
           <activity
-            android:name="com.fisincorporated.democode.bluetooth.BluetoothActivity"
+            android:name=".bluetooth.ClassicBluetoothDiscoveryActivity"
             android:parentActivityName=".FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
 
