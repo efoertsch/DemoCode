@@ -3,13 +3,12 @@ package com.fisincorporated.democode;
 //import de.greenrobot.daoexample.DaoMaster;
 //import de.greenrobot.daoexample.DaoSession;
 //import de.greenrobot.daoexample.DaoMasterOpenHelper;
-import com.fisincorporated.interfaces.IHandleSelectedAction;
-
 import android.app.Activity;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+
+import com.fisincorporated.interfaces.IHandleSelectedAction;
 
 
 public class MasterFragment extends Fragment {
@@ -36,9 +35,18 @@ public class MasterFragment extends Fragment {
 		Log.i(TAG, "onAttach");
 		super.onAttach(activity);
 		// Get a reference to the parent Activity and keep it for callbacks
-		// (if appropriate - fragment may not be listfragment, and activity may not have implemented callback).
-		if (activity instanceof IHandleSelectedAction){
-			callBacks = (IHandleSelectedAction) activity;
+		if (activity instanceof  IHandleSelectedAction) {
+				callBacks = (IHandleSelectedAction) activity;
+		}
+		else {
+			callBacks = (IHandleSelectedAction) new DummyHandleSelectedAction();
+		}
+
+	}
+
+	private class DummyHandleSelectedAction implements IHandleSelectedAction{
+		@Override
+		public void onSelectedAction(Bundle args) {
 		}
 	}
 	
