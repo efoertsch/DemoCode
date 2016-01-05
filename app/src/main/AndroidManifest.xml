@@ -121,7 +121,7 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
-            android:name=".ActivityForParserOutput"
+            android:name=".handlingxml.ActivityForParserOutput"
             android:parentActivityName=".FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
@@ -202,7 +202,7 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
-            android:name=".ContactsActivity"
+            android:name=".contentprovider.ContactsActivity"
             android:parentActivityName=".FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 

@@ -1,4 +1,4 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.handlingxml;
 
 import java.io.FileReader;
 import java.io.IOException;

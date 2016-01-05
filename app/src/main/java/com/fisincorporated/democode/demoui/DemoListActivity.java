@@ -26,17 +26,32 @@ import com.fisincorporated.democode.R;
 public class DemoListActivity extends AppCompatActivity implements
         DemoListFragment.Callbacks {
     private static final String TAG = DemoListActivity.class.getSimpleName();
-    private static final String MAIN_FRAGMENT_TITLE = "com.fisincorporated.democode.demoui.MAIN_FRAGMENT_TITLE";
-
+    private static final String MASTER_FRAGMENT_TITLE = "com.fisincorporated.democode.demoui.MASTER_FRAGMENT_TITLE";
+    private static final String DETAIL_FRAGMENT_TITLE = "com.fisincorporated.democode.demoui.DETAIL_FRAGMENT_TITLE";
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
-    private AlertDialog errorAlertDialog;
-    protected ActionBar actionBar;
-    private TextView tvActionBarSubHeader ;
-    private TextView tvFragmentHeaderText;
+    private AlertDialog mErrorAlertDialog;
+    protected ActionBar mActionBar;
+    private TextView mTvActionBarSubHeader;
+    private TextView mTvFragmentHeaderText;
+    /**
+     * A JSON list of the demo topics that can be selected
+     */
+    private String mDemoListJson = null;
+    /**
+     * The demo topic header (only not null once you start drilling down
+     */
+    private String mMainFragmentTitle = null;
+
+    /**
+     * Hold detail fragment text (only not null when you get down to last level of list and a
+     * demo topic is selected from the master list
+     */
+    private String mDetailFragmentTitle = null;
+
 
     //added for tablet
     protected int getLayoutResId() {
@@ -45,21 +60,20 @@ public class DemoListActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DemoTopicList demoTopicList = null;
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
 
-        tvActionBarSubHeader = (TextView) findViewById(R.id.tvActionBarSubHeader);
-        tvFragmentHeaderText = (TextView) findViewById(R.id.tvFragmentHeaderText);
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        mTvActionBarSubHeader = (TextView) findViewById(R.id.tvActionBarSubHeader);
+        mTvFragmentHeaderText = (TextView) findViewById(R.id.tvFragmentHeaderText);
+        mActionBar = getSupportActionBar();
+        mActionBar.setDisplayHomeAsUpEnabled(true);
         // See if intent had list of fragments (to be passed to list fragment)
-        // Note demoListJson may be null if just starting this as main activity
-        String demoListJson = getIntent().getStringExtra(DemoTopicList.DEMO_LIST);
-        String mainFragmentTitle = getIntent().getStringExtra(MAIN_FRAGMENT_TITLE);
-        if (mainFragmentTitle != null) {
-            tvActionBarSubHeader.setText(mainFragmentTitle);
-            tvActionBarSubHeader.setVisibility(View.VISIBLE);
+        // Note mDemoListJson may be null if just starting this as main activity
+        mDemoListJson = getIntent().getStringExtra(DemoTopicList.DEMO_LIST);
+        mMainFragmentTitle = getIntent().getStringExtra(MASTER_FRAGMENT_TITLE);
+        if (mMainFragmentTitle != null && mTvActionBarSubHeader != null) {
+            mTvActionBarSubHeader.setText(mMainFragmentTitle);
+            mTvActionBarSubHeader.setVisibility(View.VISIBLE);
         }
 
 
@@ -78,13 +92,14 @@ public class DemoListActivity extends AppCompatActivity implements
             fragment = new DemoListFragment();
             // pass the list of demo fragments to the list fragment
             Bundle bundle = new Bundle();
-            bundle.putString(DemoTopicList.DEMO_LIST, demoListJson);
+            bundle.putString(DemoTopicList.DEMO_LIST, mDemoListJson);
             fragment.setArguments(bundle);
 
             fm.beginTransaction().add(R.id.fragmentContainer, fragment)
                     .commit();
         }
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -112,7 +127,7 @@ public class DemoListActivity extends AppCompatActivity implements
         if (demoTopicInfo.getDemoListClassName() != null) {
             Intent listIntent = new Intent(this, Class.forName(demoTopicInfo.getActivity()));
             listIntent.putExtra(DemoTopicList.DEMO_LIST, demoTopicInfo.getDemoListClassName());
-            listIntent.putExtra(MAIN_FRAGMENT_TITLE, demoTopicInfo.getDescription());
+            listIntent.putExtra(MASTER_FRAGMENT_TITLE, demoTopicInfo.getDescription());
             startActivity(listIntent);
             return;
         }
@@ -137,8 +152,9 @@ public class DemoListActivity extends AppCompatActivity implements
                     getSupportFragmentManager().beginTransaction()
                             //.replace(R.id.item_detail_container, fragment).commit();
                             .replace(R.id.detailFragmentContainer, fragment).commit();
-                    tvFragmentHeaderText.setText(demoTopicInfo.getDescription());
-                    tvFragmentHeaderText.setVisibility(View.VISIBLE);
+                    mDetailFragmentTitle = demoTopicInfo.getDescription();
+                    mTvFragmentHeaderText.setText(mDetailFragmentTitle);
+                    mTvFragmentHeaderText.setVisibility(View.VISIBLE);
                 } catch (InstantiationException e) {
                     displayError("InstantiationException", demoTopicInfo.getFragment() + " " + e.toString());
                 } catch (IllegalAccessException e) {
@@ -159,6 +175,26 @@ public class DemoListActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(DemoTopicList.DEMO_LIST, mDemoListJson);
+        outState.putString(MASTER_FRAGMENT_TITLE, mMainFragmentTitle);
+        outState.putString(DETAIL_FRAGMENT_TITLE, mDetailFragmentTitle);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        mDemoListJson = savedInstanceState.getString(DemoTopicList.DEMO_LIST);
+        mMainFragmentTitle = savedInstanceState.getString(MASTER_FRAGMENT_TITLE);
+        mDetailFragmentTitle = savedInstanceState.getString(DETAIL_FRAGMENT_TITLE);
+        if (mDetailFragmentTitle != null) {
+            mTvFragmentHeaderText.setText(mDetailFragmentTitle);
+            mTvFragmentHeaderText.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     private void displayError(String title, String description) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // 2. Chain together various setter methods to set the dialog characteristics
@@ -166,10 +202,10 @@ public class DemoListActivity extends AppCompatActivity implements
                 .setTitle(title)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        errorAlertDialog.dismiss();
+                        mErrorAlertDialog.dismiss();
                     }
                 });
-        errorAlertDialog = builder.create();
-        errorAlertDialog.show();
+        mErrorAlertDialog = builder.create();
+        mErrorAlertDialog.show();
     }
 }
