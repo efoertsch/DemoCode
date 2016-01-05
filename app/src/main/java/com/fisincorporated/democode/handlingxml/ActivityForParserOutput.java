@@ -1,4 +1,4 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.handlingxml;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.fisincorporated.democode.R;
 import com.fisincorporated.interfaces.ICallbackTemplate;
 
 

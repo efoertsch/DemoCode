@@ -3,7 +3,9 @@ package com.fisincorporated.democode;
 
 import com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryActivity;
 import com.fisincorporated.democode.bluetooth.ListSearchBluetoothActivity;
+import com.fisincorporated.democode.contentprovider.ContactsActivity;
 import com.fisincorporated.democode.demoui.DemoListActivity;
+import com.fisincorporated.democode.handlingxml.ActivityForParserOutput;
 import com.fisincorporated.democode.threads.AsyncTaskActivity;
 import com.fisincorporated.democode.threads.HandlerThreadActivity;
 import com.fisincorporated.democode.threads.IntentServiceActivity;

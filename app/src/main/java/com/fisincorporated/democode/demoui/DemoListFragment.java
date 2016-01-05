@@ -32,7 +32,9 @@ public class DemoListFragment extends ListFragment {
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
-    private DemoTopicList demoTopicList = new DemoTopicList();
+
+    private String mDemoListClassName = null;
+    private DemoTopicList mDemoTopicList = new DemoTopicList();
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -71,14 +73,16 @@ public class DemoListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lookForArguments(savedInstanceState);
-        setListAdapter(new ArrayAdapter<DemoTopicInfo>(getActivity(),
-                android.R.layout.simple_list_item_activated_1, android.R.id.text1,
-                demoTopicList.ITEMS));
+
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        setListAdapter(new ArrayAdapter<DemoTopicInfo>(getActivity(),
+                android.R.layout.simple_list_item_activated_1, android.R.id.text1,
+                mDemoTopicList.ITEMS));
 
         // Restore the previously serialized activated item position.
         if (savedInstanceState != null
@@ -104,21 +108,21 @@ public class DemoListFragment extends ListFragment {
             bundle = savedInstanceState;
         }
         if (bundle != null) {
-            String demoListClassName = bundle.getString(DemoTopicList.DEMO_LIST);
-            demoTopicList = null;
-            if (demoListClassName != null) {
+            mDemoListClassName = bundle.getString(DemoTopicList.DEMO_LIST);
+            mDemoTopicList = null;
+            if (mDemoListClassName != null) {
                 try {
-                    Class<?> demoClass = Class.forName(demoListClassName);
-                    demoTopicList = (DemoTopicList) demoClass.newInstance();
+                    Class<?> demoClass = Class.forName(mDemoListClassName);
+                    mDemoTopicList = (DemoTopicList) demoClass.newInstance();
                 } catch (ClassNotFoundException cnfe) {
-                    demoTopicList = null;
+                    mDemoTopicList = null;
                 } catch (java.lang.InstantiationException e) {
-                    demoTopicList = null;
+                    mDemoTopicList = null;
                 } catch (IllegalAccessException e) {
-                    demoTopicList = null;
+                    mDemoTopicList = null;
                 }
             } else {
-                demoTopicList = new MainDemoTopicList();
+                mDemoTopicList = new MainDemoTopicList();
             }
         }
     }
@@ -151,7 +155,7 @@ public class DemoListFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        DemoTopicInfo demoTopicInfo = (DemoTopicInfo) demoTopicList.ITEMS.get(position);
+        DemoTopicInfo demoTopicInfo = (DemoTopicInfo) mDemoTopicList.ITEMS.get(position);
         try {
             mCallbacks.onItemSelected(demoTopicInfo);
         } catch (ClassNotFoundException e) {
@@ -163,6 +167,7 @@ public class DemoListFragment extends ListFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(DemoTopicList.DEMO_LIST, mDemoListClassName );
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);

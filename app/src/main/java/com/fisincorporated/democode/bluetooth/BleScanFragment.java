@@ -186,6 +186,7 @@ public class BleScanFragment extends MasterFragment {
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                         .build();
                 mFilters = new ArrayList<ScanFilter>();
+                getScanCallback();
             }
             scanLeDevice(true);
         }

@@ -1,4 +1,4 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.contentprovider;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -13,6 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.fisincorporated.democode.R;
 
 import java.util.ArrayList;
 
