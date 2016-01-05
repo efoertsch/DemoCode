@@ -2,7 +2,7 @@
 package com.fisincorporated.democode;
 
 import com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryActivity;
-import com.fisincorporated.democode.bluetooth.BluetoothActivity2;
+import com.fisincorporated.democode.bluetooth.ListSearchBluetoothActivity;
 import com.fisincorporated.democode.demoui.DemoListActivity;
 import com.fisincorporated.democode.threads.AsyncTaskActivity;
 import com.fisincorporated.democode.threads.HandlerThreadActivity;
@@ -17,7 +17,7 @@ public class FunctionListFragment extends MainMenuListFragment {
    	 addMenuItem("ThreadActivityList",DemoListActivity.class);
    	 addMenuItem("ItemListActivity", ItemListActivity.class);
    	 addMenuItem("Bluetooth Demo", ClassicBluetoothDiscoveryActivity.class);
-   	 addMenuItem("Bluetooth Demo2", BluetoothActivity2.class);
+   	 addMenuItem("Bluetooth Demo2", ListSearchBluetoothActivity.class);
    	 addMenuItem("IntentServiceDemo", IntentServiceActivity.class);
    	 addMenuItem("HandlerThreadDemo", HandlerThreadActivity.class);
    	 addMenuItem("AsyncTaskActivity", AsyncTaskActivity.class);
