@@ -1,24 +1,22 @@
-package com.fisincorporated.democode;
-
+package com.fisincorporated.democode.demoui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
-import com.fisincorporated.interfaces.IHandleSelectedAction;
+import com.fisincorporated.democode.R;
 
 /**
- * This template is for a FragmentActivity that can implement fragments either with
- * 1 fragment for small screen (phone) or
- * 2 fragments (parent/child) if on larger screen (tablet)
- * Create concrete FragmentActivity class by extending this class.
- * The IHandleSelectedAction is to handle callbacks from the Fragment
+ * Master demo code activity that can implement fragments either with
+ * 1. fragment for small screen (phone) or
+ * 2. fragments (parent/child) if on larger screen (tablet)
  */
-// TODO convert this to a DemoMasterActivity and move to demoui package
-    // TODO as conversion progresses do we need IHandleSelectedAction (convert use/IDemoCallBacks)
-public abstract class MasterActivity extends AppCompatActivity implements IHandleSelectedAction {
+public abstract class  DemoMasterActivity extends AppCompatActivity implements IDemoCallbacks {
+    private static final String TAG = DemoMasterActivity.class.getSimpleName();
 
     protected ActionBar actionBar;
     //private SearchView searchView = null;
@@ -50,6 +48,42 @@ public abstract class MasterActivity extends AppCompatActivity implements IHandl
         }
     }
 
+
+    @Override
+    public void createAndDisplayFragment(Bundle fragmentBundle) {
+        Fragment fragment = null;
+        String fragmentClassName = fragmentBundle.getString(DemoDrillDownFragment.NEXT_FRAGMENT);
+        if (fragmentClassName == null) {
+            Log.d(TAG, "createAndDisplayFragment called but no DemoDrillDownFragment.NEXT_FRAGMENT string found in bundle");
+            return;
+        }
+
+        try {
+            Class<?> demoClass = Class.forName(fragmentClassName);
+            fragment = (Fragment) demoClass.newInstance();
+            fragment.setArguments(fragmentBundle);
+        } catch (ClassNotFoundException cnfe) {
+            return;
+        } catch (java.lang.InstantiationException e) {
+            return;
+        } catch (IllegalAccessException e) {
+            return;
+        }
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment oldDetail = fm.findFragmentById(R.id.fragmentContainer);
+
+        if (oldDetail != null) {
+            ft.remove(oldDetail);
+        }
+        if (fragment != null){
+            ft.add(R.id.fragmentContainer, fragment);
+        }
+        ft.commit();
+    }
+
+
+
 //uncomment/modify to implement search
 //Add the menu , in this case just search icon
 //@Override
@@ -77,14 +111,14 @@ public abstract class MasterActivity extends AppCompatActivity implements IHandl
 //				doSearch(query);
 //				return true;
 //			}});
-//	
+//
 //		ComponentName name = getComponentName();
 //		SearchableInfo searchInfo = searchManager.getSearchableInfo(name);
 //		searchView.setSearchableInfo(searchInfo);
 //		return true;
 //	}
 //	return false;
-//	
+//
 //}
 
 //uncomment/modify to implement search

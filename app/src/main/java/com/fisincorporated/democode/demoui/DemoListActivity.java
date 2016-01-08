@@ -15,16 +15,16 @@ import android.widget.TextView;
 import com.fisincorporated.democode.R;
 
 /**
- * DemoListActivity is a 'generic' activity in that all should do is
- * display a fragment that contains a list of demo topics. A callback is provided such that
- * that selecting a demo topic on the fragment causes the activity to either
- * 1) Call the associated activity for that topic Or
- * 2) Display the demo fragment (that demos a particular aspect of Android code)
- * Whether or not to do one or the other is dependent on the info contained in the
- * DemoTopicInfo class passed in the callback
+ * DemoListActivity is a 'generic' activity in that it can
+ * 1. Display a selectable list of demo topics
+ * 2. Based on the selected demo item drill down to display a sub list OR
+ * 3. Display the selected demo topic either as a fragment or activity OR
+ * 4. If the demo fragment itself allows 'drill down' allow the demo fragment to be
+ *    replaced with the drill down fragment.
+ *  This is a bit of an experiment to see how generic we can make a code demo app.
  */
 public class DemoListActivity extends AppCompatActivity implements
-        DemoListFragment.Callbacks {
+        IDemoCallbacks {
     private static final String TAG = DemoListActivity.class.getSimpleName();
     private static final String MASTER_FRAGMENT_TITLE = "com.fisincorporated.democode.demoui.MASTER_FRAGMENT_TITLE";
     private static final String DETAIL_FRAGMENT_TITLE = "com.fisincorporated.democode.demoui.DETAIL_FRAGMENT_TITLE";
@@ -52,6 +52,10 @@ public class DemoListActivity extends AppCompatActivity implements
      */
     private String mDetailFragmentTitle = null;
 
+    /**
+     * Holds the demo fragment when the demo 'drills down' to another fragment
+     */
+    private Fragment mPreviousFragment = null;
 
     //added for tablet
     protected int getLayoutResId() {
@@ -76,8 +80,6 @@ public class DemoListActivity extends AppCompatActivity implements
             mTvActionBarSubHeader.setVisibility(View.VISIBLE);
         }
 
-
-        // if (findViewById(R.id.item_detail_container) != null) {
         if (findViewById(R.id.detailFragmentContainer) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
@@ -113,34 +115,73 @@ public class DemoListActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(DemoTopicList.DEMO_LIST, mDemoListJson);
+        outState.putString(MASTER_FRAGMENT_TITLE, mMainFragmentTitle);
+        outState.putString(DETAIL_FRAGMENT_TITLE, mDetailFragmentTitle);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        mDemoListJson = savedInstanceState.getString(DemoTopicList.DEMO_LIST);
+        mMainFragmentTitle = savedInstanceState.getString(MASTER_FRAGMENT_TITLE);
+        mDetailFragmentTitle = savedInstanceState.getString(DETAIL_FRAGMENT_TITLE);
+        if (mDetailFragmentTitle != null) {
+            mTvFragmentHeaderText.setText(mDetailFragmentTitle);
+            mTvFragmentHeaderText.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    /**
+     * An Ooops occurred. Display AlertDialog with error msg.
+     * @param title
+     * @param description
+     */
+
+    private void displayError(String title, String description) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(description)
+                .setTitle(title)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mErrorAlertDialog.dismiss();
+                        mErrorAlertDialog = null;
+                    }
+                });
+        mErrorAlertDialog = builder.create();
+        mErrorAlertDialog.show();
+        mErrorAlertDialog.setCanceledOnTouchOutside(false);
+    }
+
     /**
      * A demo topic has been selected. Determine if you need to
      * 1) Start new activity to display the topic
-     * 2) Display the demo topic in
-     *
-     * @throws ClassNotFoundException
+     * 2) Display the demo topic in fragment
      */
     @Override
-    public void onItemSelected(DemoTopicInfo demoTopicInfo) throws ClassNotFoundException {
+    public void onItemSelected(DemoTopicInfo demoTopicInfo) {
         // See if demo topic has another demolist (still drilling down in list of demo)
         // and if so then call the activity passing it the list
         if (demoTopicInfo.getDemoListClassName() != null) {
-            Intent listIntent = new Intent(this, Class.forName(demoTopicInfo.getActivity()));
-            listIntent.putExtra(DemoTopicList.DEMO_LIST, demoTopicInfo.getDemoListClassName());
-            listIntent.putExtra(MASTER_FRAGMENT_TITLE, demoTopicInfo.getDescription());
-            startActivity(listIntent);
+            Intent intent = createIntentForClass(demoTopicInfo.getActivity());
+            if (intent == null) {
+                // Problem creating intent
+                return;
+            }
+            intent.putExtra(DemoTopicList.DEMO_LIST, demoTopicInfo.getDemoListClassName());
+            intent.putExtra(MASTER_FRAGMENT_TITLE, demoTopicInfo.getDescription());
+            startActivity(intent);
             return;
         }
-        // Here if no list
+        // Here if no new drill down list
         // See if we are on tablet
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            // Eventually set up to pass arguments (like a drill down list)
-            //Bundle arguments = new Bundle();
-            //arguments.putString(ItemDetailFragment.ARG_ITEM_ID, id);
-            //ItemDetailFragment fragment = new ItemDetailFragment();
             Fragment fragment;
             String fragmentClassName = demoTopicInfo.getFragment();
             if (fragmentClassName != null) {
@@ -168,44 +209,75 @@ public class DemoListActivity extends AppCompatActivity implements
         }
         // In single-pane mode OR double pane but you don't have a fragment.
         // Simply start the detail activity for the selected item ID.
-        Intent detailIntent = new Intent(this, Class.forName(demoTopicInfo.getActivity()));
-        // Eventually add arguments
-        //detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_ID, id);
-        startActivity(detailIntent);
-
+        Intent intent = createIntentForClass(demoTopicInfo.getActivity());
+        if (intent == null) {
+            // Problem creating intent
+            return;
+        }
+        startActivity(intent);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(DemoTopicList.DEMO_LIST, mDemoListJson);
-        outState.putString(MASTER_FRAGMENT_TITLE, mMainFragmentTitle);
-        outState.putString(DETAIL_FRAGMENT_TITLE, mDetailFragmentTitle);
-    }
 
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        mDemoListJson = savedInstanceState.getString(DemoTopicList.DEMO_LIST);
-        mMainFragmentTitle = savedInstanceState.getString(MASTER_FRAGMENT_TITLE);
-        mDetailFragmentTitle = savedInstanceState.getString(DETAIL_FRAGMENT_TITLE);
-        if (mDetailFragmentTitle != null) {
-            mTvFragmentHeaderText.setText(mDetailFragmentTitle);
-            mTvFragmentHeaderText.setVisibility(View.VISIBLE);
+    /**
+     * Create new fragment and display it
+     * @param fragmentBundle - contains name of fragment to display and the args to pass to it
+     */
+    public void createAndDisplayFragment(Bundle fragmentBundle) {
+        String fragmentClassName = fragmentBundle.getString(DemoDrillDownFragment.NEXT_FRAGMENT);
+        if (fragmentClassName != null) {
+            try {
+                Fragment fragment = (Fragment) Class.forName(fragmentClassName).newInstance();
+                fragment.setArguments(fragmentBundle);
+                displayFragment(fragment);
+            } catch (InstantiationException e) {
+                displayError("InstantiationException", fragmentClassName + " " + e.toString());
+            } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                displayError("IllegalAccessException", fragmentClassName + " " + e.toString());
+            } catch (ClassNotFoundException cnfe) {
+                displayError("ClassNotFoundException", fragmentClassName + " could not be instantiated");
+            }
         }
 
     }
 
-    private void displayError(String title, String description) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        // 2. Chain together various setter methods to set the dialog characteristics
-        builder.setMessage(description)
-                .setTitle(title)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        mErrorAlertDialog.dismiss();
-                    }
-                });
-        mErrorAlertDialog = builder.create();
-        mErrorAlertDialog.show();
+    /**
+     * Display 'drill down' fragment in appropriate fragment container
+     * @param newFragment
+     */
+    private void displayFragment(Fragment newFragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        int fragmentId ;
+        // Are we on tablet or not
+        if (mTwoPane) {
+            fragmentId  = R.id.detailFragmentContainer;
+        }
+        else {
+            fragmentId = R.id.fragmentContainer;
+        }
+        mPreviousFragment = fm.findFragmentById(fragmentId);
+        if (mPreviousFragment == null) {
+            fm.beginTransaction()
+                    .add(fragmentId, newFragment, "option")
+                    .commit();
+        } else {
+            fm.beginTransaction()
+                    .replace(fragmentId, newFragment, "option")
+                    .commit();
+        }
+    }
+
+    /**
+     * Create new intent based on class name
+     * @param className
+     * @return
+     */
+    private Intent createIntentForClass(String className) {
+        try {
+            return new Intent(this, Class.forName(className));
+        } catch (ClassNotFoundException e) {
+            displayError("ClassNotFoundException", className + " could not be instantiated");
+        }
+        return null;
     }
 }

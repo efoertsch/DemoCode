@@ -1,5 +1,7 @@
 package com.fisincorporated.democode.bluetooth;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
@@ -10,23 +12,35 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.fisincorporated.democode.R;
+import com.fisincorporated.democode.demoui.DemoDrillDownFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DeviceControlActivity extends AppCompatActivity {
-    private final static String TAG = DeviceControlActivity.class.getSimpleName();
+/**
+ * Basically the DeviceControlActivity from the Android Ble demo code converted to fragment
+ * with appropriate modifications
+ */
+@TargetApi(18)
+public class BleControlFragment extends DemoDrillDownFragment {
+    private final static String TAG = BleControlFragment.class.getSimpleName();
+
+    public BleControlFragment() {
+        // Required empty public constructor
+    }
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
@@ -53,8 +67,10 @@ public class DeviceControlActivity extends AppCompatActivity {
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
                 Log.e(TAG, "Unable to initialize Bluetooth");
-                finish();
+                getActivity().finish();
+                return;
             }
+
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
         }
@@ -78,11 +94,11 @@ public class DeviceControlActivity extends AppCompatActivity {
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
                 updateConnectionState(R.string.connected);
-                invalidateOptionsMenu();
+                getActivity().invalidateOptionsMenu();
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
                 updateConnectionState(R.string.disconnected);
-                invalidateOptionsMenu();
+                getActivity().invalidateOptionsMenu();
                 clearUI();
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
@@ -132,35 +148,53 @@ public class DeviceControlActivity extends AppCompatActivity {
         mDataField.setText(R.string.no_data);
     }
 
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.gatt_services_characteristics);
-
-        final Intent intent = getIntent();
-        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.gatt_services_characteristics, container, false);
+        lookForArguments(savedInstanceState);
+        setHasOptionsMenu (true);
         // Sets up UI references.
-        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
-        mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
+        ((TextView) view.findViewById(R.id.device_address)).setText(mDeviceAddress);
+        mGattServicesList = (ExpandableListView) view.findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
-        mConnectionState = (TextView) findViewById(R.id.connection_state);
-        mDataField = (TextView) findViewById(R.id.data_value);
+        mConnectionState = (TextView) view.findViewById(R.id.connection_state);
+        mDataField = (TextView) view.findViewById(R.id.data_value);
 
-        //
-//        getActionBar().setTitle(mDeviceName);
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(mDeviceName);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        return view;
+    }
+
+    private void lookForArguments(Bundle savedInstanceState) {
+        Bundle bundle = null;
+        if (getArguments() != null) {
+            bundle = getArguments();
+        }
+// If fragment destroyed as not needed in FragmentStatePagerAdapter
+// but then later recreated, the savedInstanceState will hold info
+        if (savedInstanceState != null) {
+            bundle = savedInstanceState;
+        }
+        if (bundle != null) {
+            mDeviceName = bundle.getString(EXTRAS_DEVICE_NAME);
+            mDeviceAddress = bundle.getString(EXTRAS_DEVICE_ADDRESS);
+
+        }
+
     }
 
     @Override
-    protected void onResume() {
+    public void onStart() {
+        super.onStart();
+        Intent gattServiceIntent = new Intent(getActivity(), BluetoothLeService.class);
+        getActivity().bindService(gattServiceIntent, mServiceConnection, Activity.BIND_AUTO_CREATE);
+
+
+    }
+
+    @Override
+    public void onResume() {
         super.onResume();
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        getActivity().registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
@@ -168,21 +202,30 @@ public class DeviceControlActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
-        unregisterReceiver(mGattUpdateReceiver);
+        getActivity().unregisterReceiver(mGattUpdateReceiver);
     }
 
     @Override
-    protected void onDestroy() {
+    public void onStop() {
+        super.onStop();
+        // Unbind from the service
+        if (mServiceConnection != null) {
+            getActivity().unbindService(mServiceConnection);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
         mBluetoothLeService = null;
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.gatt_services, menu);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.gatt_services, menu);
         if (mConnected) {
             menu.findItem(R.id.menu_connect).setVisible(false);
             menu.findItem(R.id.menu_disconnect).setVisible(true);
@@ -190,12 +233,11 @@ public class DeviceControlActivity extends AppCompatActivity {
             menu.findItem(R.id.menu_connect).setVisible(true);
             menu.findItem(R.id.menu_disconnect).setVisible(false);
         }
-        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.menu_connect:
                 mBluetoothLeService.connect(mDeviceAddress);
                 return true;
@@ -203,14 +245,14 @@ public class DeviceControlActivity extends AppCompatActivity {
                 mBluetoothLeService.disconnect();
                 return true;
             case android.R.id.home:
-                onBackPressed();
+                getActivity().onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void updateConnectionState(final int resourceId) {
-        runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mConnectionState.setText(resourceId);
@@ -268,16 +310,15 @@ public class DeviceControlActivity extends AppCompatActivity {
         }
 
         SimpleExpandableListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(
-                this,
-
+                getActivity(),
                 gattServiceData,
                 android.R.layout.simple_expandable_list_item_2,
-                new String[] {LIST_NAME, LIST_UUID},
-                new int[] { android.R.id.text1, android.R.id.text2 },
+                new String[]{LIST_NAME, LIST_UUID},
+                new int[]{android.R.id.text1, android.R.id.text2},
                 gattCharacteristicData,
                 android.R.layout.simple_expandable_list_item_2,
-                new String[] {LIST_NAME, LIST_UUID},
-                new int[] { android.R.id.text1, android.R.id.text2 }
+                new String[]{LIST_NAME, LIST_UUID},
+                new int[]{android.R.id.text1, android.R.id.text2}
         );
         mGattServicesList.setAdapter(gattServiceAdapter);
     }
@@ -290,4 +331,5 @@ public class DeviceControlActivity extends AppCompatActivity {
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;
     }
+
 }

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * Copied from Android Ble demo code
  * Service for managing connection and data communication with a GATT server hosted on a
  * given Bluetooth LE device.
  */

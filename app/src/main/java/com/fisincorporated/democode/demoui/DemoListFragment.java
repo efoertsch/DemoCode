@@ -13,7 +13,8 @@ import android.widget.ListView;
  * When the app first starts it will display the list of topics based on MainDemoTopicList. From there
  * on the fragment should display a list of topics that are passed to it via the calling activity
  */
-public class DemoListFragment extends ListFragment {
+public class DemoListFragment extends ListFragment  {
+
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -21,11 +22,12 @@ public class DemoListFragment extends ListFragment {
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
+
     /**
      * The fragment's current callback object, which is notified of list item
-     * clicks.
+     * clicks and other sundry happenings.
      */
-    private Callbacks mCallbacks = sDummyCallbacks;
+    private IDemoCallbacks mCallbacks = null;
 
     /**
      * The current activated item position. Only used on tablets.
@@ -36,31 +38,7 @@ public class DemoListFragment extends ListFragment {
     private String mDemoListClassName = null;
     private DemoTopicList mDemoTopicList = new DemoTopicList();
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callbacks {
-        /**
-         * Callback for when an item has been selected.
-         *
-         * @throws ClassNotFoundException
-         */
-        public void onItemSelected(DemoTopicInfo demoTopicInfo)
-                throws ClassNotFoundException;
-    }
 
-    /**
-     * A dummy implementation of the {@link Callbacks} interface that does
-     * nothing. Used only when this fragment is not attached to an activity.
-     */
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-
-        @Override
-        public void onItemSelected(DemoTopicInfo DemoTopicInfo) {
-        }
-    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -93,7 +71,7 @@ public class DemoListFragment extends ListFragment {
     }
 
     /**
-     * Look for passed in arguments. If not provided use
+     * Look for passed in arguments.
      * @param savedInstanceState
      */
     private void lookForArguments(Bundle savedInstanceState) {
@@ -131,21 +109,18 @@ public class DemoListFragment extends ListFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
+        // Activities cocallbackntaining this fragment must implement its callbacks.
+        if (!(activity instanceof IDemoCallbacks)) {
             throw new IllegalStateException(
-                    "Activity must implement fragment's callbacks.");
+                    "Activity must implement IDemoCallbacks.");
         }
-
-        mCallbacks = (Callbacks) activity;
+            mCallbacks = (IDemoCallbacks) activity;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-
-        // Reset the active callbacks interface to the dummy implementation.
-        mCallbacks = sDummyCallbacks;
+        mCallbacks = null;
     }
 
     @Override
@@ -156,12 +131,9 @@ public class DemoListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         DemoTopicInfo demoTopicInfo = (DemoTopicInfo) mDemoTopicList.ITEMS.get(position);
-        try {
-            mCallbacks.onItemSelected(demoTopicInfo);
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        mCallbacks.onItemSelected(demoTopicInfo);
+
+
     }
 
     @Override
