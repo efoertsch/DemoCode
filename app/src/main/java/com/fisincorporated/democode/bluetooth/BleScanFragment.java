@@ -28,8 +28,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fisincorporated.democode.MasterFragment;
 import com.fisincorporated.democode.R;
+import com.fisincorporated.democode.demoui.DemoDrillDownFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +38,10 @@ import java.util.List;
  * Start Ble scanning and display advertising packets
  * Adapted from Android demo code and
  * http://www.truiton.com/2015/04/android-bluetooth-low-energy-ble-example/
+ * Handles scanning for both pre and post 5.0 Ble devices.
  */
 @TargetApi(18)
-public class BleScanFragment extends MasterFragment {
+public class BleScanFragment extends DemoDrillDownFragment {
     protected static final String TAG = "BleScanFragment";
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter mBluetoothAdapter;
@@ -72,7 +73,6 @@ public class BleScanFragment extends MasterFragment {
      * Use this factory method to create a new instance of
      * this fragment
      */
-    // TODO: Rename and change types and number of parameters
     public static BleScanFragment newInstance() {
         BleScanFragment fragment = new BleScanFragment();
         return fragment;
@@ -83,9 +83,10 @@ public class BleScanFragment extends MasterFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mHandler = new Handler();
+        Log.d(TAG, "Package :" + this.getClass().getPackage().getName());
 
-        // Use this check to determine whether BLE is supported on the device.  Then you can
-        // selectively disable BLE-related features.
+
+        // Use this check to determine whether BLE is supported on the device.
         if (!getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(getActivity(), R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
             getActivity().finish();
@@ -116,13 +117,25 @@ public class BleScanFragment extends MasterFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final BleScanResult bleScanResult = mLeDeviceListAdapter.getDevice(position);
                 if (bleScanResult == null) return;
-                final Intent intent = new Intent(getActivity(), DeviceControlActivity.class);
-                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, bleScanResult.getDevice().getName());
-                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, bleScanResult.getDevice().getAddress());
+                Bundle bundle = new Bundle();
+                bundle.putString( DemoDrillDownFragment.NEXT_FRAGMENT,BleControlFragment.class.getName() );
+                bundle.putString(BleControlFragment.EXTRAS_DEVICE_ADDRESS,bleScanResult.getDevice().getAddress() );
+                bundle.putString(BleControlFragment.EXTRAS_DEVICE_NAME , bleScanResult.getDevice().getName());
+                if (mDemoCallbacks != null){
+                    mDemoCallbacks.createAndDisplayFragment(bundle);
+                }
+                else
+                {
+                    Toast.makeText(getActivity(),R.string.callback_not_available,Toast.LENGTH_SHORT).show();
+                }
+
                 if (mScanning) {
                     scanLeDevice(false);
                 }
-                startActivity(intent);
+//                final Intent intent = new Intent(getActivity(), DeviceControlActivity.class);
+//                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, bleScanResult.getDevice().getName());
+//                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, bleScanResult.getDevice().getAddress());
+                //startActivity(intent);
             }
         });
 
