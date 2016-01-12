@@ -9,7 +9,7 @@ import android.bluetooth.le.ScanResult;
  * Created by ericfoertsch on 1/4/16.
  * cribbed some code from http://stackoverflow.com/questions/22016224/ble-obtain-uuid-encoded-in-advertising-packet
  */
-public class BleScanResult {
+public class BleScanResult implements Comparable<BleScanResult> {
     private static final String TAG = BleScanResult.class.getSimpleName();
     private byte[] mScanRecord;
     private BluetoothDevice mBluetoothDevice;
@@ -91,7 +91,7 @@ public class BleScanResult {
     public String toString() {
         if (preLollipop) {
             return "ScanResult{" + "mDevice=" + mBluetoothDevice + ", mScanRecord="
-                    +mBleScanRecord.toString() + ", mRssi=" + mRssi + ", mTimestampNanos="
+                    + mBleScanRecord.toString() + ", mRssi=" + mRssi + ", mTimestampNanos="
                     + 0 + '}';
         } else {
             return mScanResult.toString();
@@ -99,6 +99,24 @@ public class BleScanResult {
     }
 
 
+    /**
+     * Allow sorting by fist rssi then device name if same rssi value
+     *
+     * @param anotherBleScanResult
+     * @return
+     */
+    @Override
+    public int compareTo(BleScanResult anotherBleScanResult) {
+        if (getRssi() == anotherBleScanResult.getRssi()) {
+            int order = getDeviceName().compareTo(anotherBleScanResult.getDeviceName());
+            return (order == 0 ? 0 : (order < 0 ? -1 : +1));
+        }
+        if (getRssi() < anotherBleScanResult.getRssi()) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
 }
 
 

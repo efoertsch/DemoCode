@@ -52,4 +52,10 @@
 
     <string name="callback_not_available">Callback interface not available for this request.</string>
 
+    <!-- For heart rate demo -->
+    <string name="heart_rate">Heart Rate(pulse)</string>
+    <string name="connected_client">Connected Client</string>
+    <string name="not_connected">Not connected</string>
+    <string name="must_be_at_api_21">Must be at API(21) - Lollipop to use this demo</string>
+
 </resources>
