@@ -36,6 +36,7 @@
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">BLE Device Scan</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="ble_client">Ble Client:</string>
 
     <string name="unknown_device">Unknown device</string>
     <string name="unknown_characteristic">Unknown characteristic</string>
@@ -53,9 +54,9 @@
     <string name="callback_not_available">Callback interface not available for this request.</string>
 
     <!-- For heart rate demo -->
-    <string name="heart_rate">Heart Rate(pulse)</string>
-    <string name="connected_client">Connected Client</string>
+    <string name="heart_rate">Heart Rate:</string>
+    <string name="connected_client">Ble Client:</string>
     <string name="not_connected">Not connected</string>
-    <string name="must_be_at_api_21">Must be at API(21) - Lollipop to use this demo</string>
+    <string name="must_be_at_api_21">Must be at API(21)/Lollipop or newer to use this demo</string>
 
 </resources>

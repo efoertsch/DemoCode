@@ -44,6 +44,7 @@ import android.widget.Toast;
 import com.fisincorporated.application.DemoApplication;
 import com.fisincorporated.democode.bluetoothevents.A2DPStatusUpdate;
 import com.fisincorporated.democode.bluetoothevents.BleAdvertisingStatus;
+import com.fisincorporated.democode.bluetoothevents.BleCharacteristicChangedNotificationError;
 import com.fisincorporated.democode.bluetoothevents.BleCharacteristicChanged;
 import com.fisincorporated.democode.bluetoothevents.BleCharacteristicRead;
 import com.fisincorporated.democode.bluetoothevents.BleCharacteristicReadRequest;
@@ -73,16 +74,18 @@ import java.util.List;
 import static android.bluetooth.BluetoothDevice.EXTRA_DEVICE;
 
 /**
+ * Cribbed code from Android Ble Demo project and other sources and then did lots of modifications
+ * Events and information communicated back to UI via Otto bus events
+ *
  * Service to handle all things Bluetooth
  * 1. SPP  (to be implemented)
  * 2. Ble scanning
  * 3. Ble Client
- * 4. Ble Periphal
+ * 4. Ble Peripheral  (Heart rate peripheral)
  * 5. Methods to connect A2DP/HFP (to be implemented)
- * <p/>
- * Cribbed code from Android Ble Demo project and other sources and then did lots of modifications
- * Events and information communicated back to UI via Otto bus events
- * <p/>
+ *<p/>
+ * Requests to the service go to a handler. The following indicates
+ * what the handler message should contain.
  * 'what' value in Handler message      Requires this value in obj
  * CLASSIC_BT_START_SCAN                N/A
  * CLASSIC_BT_STOP_SCAN                 N/A
@@ -226,6 +229,7 @@ public class BluetoothDemoService extends Service {
         mBtRequestHandler = new BtRequestHandler(serviceLooper);
         mOttoBus = DemoApplication.getOttoBus();
         registerBluetoothReceiver();
+        Toast.makeText(this, "BluetoothDemoService started", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -501,7 +505,7 @@ public class BluetoothDemoService extends Service {
                     if (status == BluetoothGatt.GATT_SUCCESS) {
                         mOttoBus.post(new BleServicesDiscovered());
                     } else {
-                        Log.w(TAG, "onServicesDiscovered received: " + status);
+                        Log.i(TAG, "onServicesDiscovered received: " + status);
                     }
                 }
 
@@ -517,6 +521,7 @@ public class BluetoothDemoService extends Service {
                 @Override
                 public void onCharacteristicChanged(BluetoothGatt gatt,
                                                     BluetoothGattCharacteristic characteristic) {
+                    Log.d(TAG, "onCharacteristicChanged() received:" + gatt.getDevice());
                     mOttoBus.post(new BleCharacteristicChanged(characteristic));
                 }
             };
@@ -725,16 +730,24 @@ public class BluetoothDemoService extends Service {
 
 
     private void sendResponse(BleResponse bleResponse) {
+        Log.d(TAG, "sendResponse() to device: " + bleResponse.getDevice().getName() + " value:" + Utility.toHexString(bleResponse.getValue()));
         boolean success = mGattServer.sendResponse(bleResponse.getDevice(), bleResponse.getRequestId(), bleResponse.getStatus(),
                 bleResponse.getOffset(), bleResponse.getValue());
+        Log.d(TAG, "sendResponse() " + ((success == true)? "succeeded" : "failed") );
         if (!success) {
             mOttoBus.post(new BleResponseError(bleResponse));
         }
     }
 
     private void sendBleCharacteristicChanged(BleCharacteristicChangedNotification bleCcNotification) {
-        mGattServer.notifyCharacteristicChanged(bleCcNotification.getDevice(), bleCcNotification.getCharacteristic(),
+        Log.d(TAG, "sendBleCharacteristicChanged() to device: " + bleCcNotification.getDevice().getName()
+                + " value:" + Utility.toHexString(bleCcNotification.getCharacteristic().getValue()));
+        boolean success = mGattServer.notifyCharacteristicChanged(bleCcNotification.getDevice(), bleCcNotification.getCharacteristic(),
                 bleCcNotification.isConfirm());
+        Log.d(TAG, "sendBleCharacteristicChanged() " + ((success == true) ? "succeeded" : "failed"));
+        if (!success) {
+            mOttoBus.post(new BleCharacteristicChangedNotificationError(bleCcNotification));
+        }
     }
 
 
@@ -767,7 +780,7 @@ public class BluetoothDemoService extends Service {
                 public void onConnectionStateChange(BluetoothDevice device, int status, int newState) {
                     super.onConnectionStateChange(device, status, newState);
                     mOttoBus.post(new BleClientDeviceStatusChange(device, status, newState));
-                    Log.d(TAG, "onConnectionStateChange status=" + status + "->" + newState);
+                    Log.d(TAG, "onConnectionStateChange status=" + status + "  newState:" + newState);
                 }
 
                 @Override
