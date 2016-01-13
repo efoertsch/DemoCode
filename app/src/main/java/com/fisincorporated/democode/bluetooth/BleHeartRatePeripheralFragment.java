@@ -15,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +29,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * Starts a Ble server. Allows input of heart rate(pulse) for which updates
+ * A demo of implementing a heart rate peripheral(server)
+ * Starts a Ble server via BluetoothDemoService.
+ * Displays a connected client and will update client when changes made to the heart rate.
+ * Note that the server only runs on devices with Android 5.0 and up. So only run this demo on
+ * 5.0+ devices. The app won't crash if you don't it just won't do anything.
  */
 @TargetApi(21)
 public class BleHeartRatePeripheralFragment extends BleDemoFragment {
@@ -54,33 +59,25 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.ble_heart_rate_peripheral, container, false);
         mEtHeartRate = (EditText) view.findViewById(R.id.etHeartRate);
+
+        // For softkeyboard
         mEtHeartRate.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    return true;
+                boolean handled = false;
+                if (mClientDevice != null && actionId == EditorInfo.IME_ACTION_SEND) {
+                    sendNewHeartRateValue();
+                    handled = true;
                 }
-                if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        && event.getAction() == KeyEvent.ACTION_UP) {
-                    // send the new heartrate value
-                    if (mClientDevice != null) {
-                        setHeartRate();
-                        queueBluetoothRequest(BluetoothDemoService.BLE_SEND_NOTIFICATION, new BleCharacteristicChangedNotification(
-                                mClientDevice, mHeartRateCharacteristic, false));
-                    }
-                    return true;
-                }
-
-                return false;
+                return handled;
             }
         });
+
         mTvConnectedClient = (TextView) view.findViewById(R.id.tvConnectedClient);
         return view;
     }
@@ -88,11 +85,13 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
     @Override
     public void onResume() {
         super.onResume();
+        mTvConnectedClient.setText(R.string.not_connected);
         // Start advertising as heart rate periphal
         if (Build.VERSION.SDK_INT >= 21) {
             bluetoothGattServices.add(createHeartRateService());
             queueBluetoothRequest(BluetoothDemoService.BLE_START_PERIPHERAL_SERVICE, bluetoothGattServices);
         } else {
+            mEtHeartRate.setEnabled(false);
             Toast.makeText(getActivity(), R.string.must_be_at_api_21, Toast.LENGTH_SHORT).show();
         }
     }
@@ -107,6 +106,11 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
         }
     }
 
+
+    /**
+     * Create a heart rate Ble service with heart rate characteristic
+     * @return
+     */
     private BluetoothGattService createHeartRateService() {
         BluetoothGattService heartRateService = new BluetoothGattService(
                 UUID.fromString(HEART_RATE_SERVICE),
@@ -126,10 +130,28 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
 
     }
 
+
+    /**
+     * Send new heart rate to client
+     */
+    private void sendNewHeartRateValue() {
+        setHeartRate();
+        queueBluetoothRequest(BluetoothDemoService.BLE_SEND_NOTIFICATION, new BleCharacteristicChangedNotification(
+                mClientDevice, mHeartRateCharacteristic, false));
+    }
+
+    /**
+     * Set the new heart rate value on the characteristic
+     */
     private void setHeartRate() {
         mHeartRateCharacteristic.setValue(getHeartRate(), HEART_RATE_FORMAT, HEART_RATE_VALUE_OFFSET);
     }
 
+
+    /**
+     * Get heart rate from text field. Not this does depend on EditText field only allowing numbers
+     * @return heart rate
+     */
     private int getHeartRate() {
         String heartRate = mEtHeartRate.getText().toString();
         if (heartRate.equals("")) {
@@ -139,6 +161,11 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
 
     }
 
+
+    /**
+     * Event received from Otto on client connect/disconnect
+     * @param event
+     */
     @Subscribe
     public void onBleClientDeviceStatusChange(BleClientDeviceStatusChange event) {
         String deviceName = event.getDevice().getName();
@@ -153,6 +180,11 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
         }
     }
 
+
+    /**
+     * Event received from client via Otto to return the heart rate
+     * @param event
+     */
     @Subscribe
     public void onBleCharacteristicReadRequest(BleCharacteristicReadRequest event) {
         if (event.getCharacteristic().getUuid().toString().equalsIgnoreCase(HEART_RATE_CHARACTERISTIC)) {
@@ -167,6 +199,11 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
         }
     }
 
+
+    /**
+     * Received from BluetoothDemoService via Otto when there was an error
+     * @param bleResponse
+     */
     @Subscribe
     public void onBleResponseError(BleResponse bleResponse) {
         String errorMsg = "Error sending Ble Response to:" + bleResponse.getDevice().getName();

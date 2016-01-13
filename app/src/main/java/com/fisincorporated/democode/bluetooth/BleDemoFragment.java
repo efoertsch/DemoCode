@@ -19,9 +19,11 @@ import com.fisincorporated.democode.demoui.DemoDrillDownFragment;
 import java.util.LinkedList;
 
 /**
- * Use this fragment as parent class for Ble related UI
- * If will bind to BluetoothDemoService and pass requests to the service
+ * Parent class for Ble related demo UI fragments
+ * It will bind to BluetoothDemoService and pass requests to the service
  * It also registers for Otto events (probably from BluetoothDemoService)
+ * Note that orientation changes will stop/start the service  which leads to dropped connections
+ * (But hey this is just demo code...)
  */
 public class BleDemoFragment extends DemoDrillDownFragment {
     private static final String TAG = DemoDrillDownFragment.class.getSimpleName();
@@ -50,8 +52,6 @@ public class BleDemoFragment extends DemoDrillDownFragment {
         } else {
             mBluetoothAdapter = bluetoothManager.getAdapter();
         }
-
-
     }
 
     @Override
@@ -100,8 +100,8 @@ public class BleDemoFragment extends DemoDrillDownFragment {
      * If BluetoothDemoService not yet bound, queue the request until it is
      * request(s) first
      *
-     * @param what    BluetoothDemoService request  o
-     * @param request - what needs to be passed to BluetoothDemoService based on the 'what'
+     * @param what    BluetoothDemoService request
+     * @param request - object to be passed to BluetoothDemoService based on the 'what' request
      */
     protected void queueBluetoothRequest(int what, Object request) {
         synchronized (mBluetoothServiceRequestList) {

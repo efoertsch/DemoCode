@@ -13,10 +13,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.fisincorporated.democode.R;
+import com.fisincorporated.democode.bluetoothevents.BleCharacteristicChanged;
 import com.fisincorporated.democode.bluetoothevents.BleCharacteristicRead;
 import com.fisincorporated.democode.bluetoothevents.BleConnected;
 import com.fisincorporated.democode.bluetoothevents.BleDisconnected;
@@ -31,7 +33,7 @@ import java.util.UUID;
 
 /**
  * Basically the DeviceControlActivity from the Android Ble demo code converted to fragment
- * with appropriate modifications
+ * Also uses Otto to get updates from BluetoothDemoService
  */
 @TargetApi(18)
 public class BleControlFragment extends BleDemoFragment {
@@ -47,6 +49,7 @@ public class BleControlFragment extends BleDemoFragment {
 
     private TextView mConnectionState;
     private TextView mDataField;
+    private LinearLayout mLlProgressInd;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -68,7 +71,9 @@ public class BleControlFragment extends BleDemoFragment {
         lookForArguments(savedInstanceState);
         setHasOptionsMenu(true);
         // Sets up UI references.
+        mLlProgressInd = (LinearLayout) view.findViewById(R.id.llProgressInd);
         ((TextView) view.findViewById(R.id.device_address)).setText(mDeviceAddress);
+        ((TextView) view.findViewById(R.id.device_name)).setText(mDeviceName);
         mGattServicesList = (ExpandableListView) view.findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) view.findViewById(R.id.connection_state);
@@ -82,8 +87,6 @@ public class BleControlFragment extends BleDemoFragment {
         if (getArguments() != null) {
             bundle = getArguments();
         }
-// If fragment destroyed as not needed in FragmentStatePagerAdapter
-// but then later recreated, the savedInstanceState will hold info
         if (savedInstanceState != null) {
             bundle = savedInstanceState;
         }
@@ -92,9 +95,24 @@ public class BleControlFragment extends BleDemoFragment {
             mDeviceAddress = bundle.getString(EXTRAS_DEVICE_ADDRESS);
 
         }
-
     }
 
+    public void onResume(){
+        super.onResume();
+        resetUI();
+    }
+
+    private void resetUI() {
+        mConnected = false;
+        updateConnectionState(R.string.disconnected);
+        getActivity().invalidateOptionsMenu();
+        clearUI();
+    }
+
+    private void clearUI() {
+        mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
+        mDataField.setText(R.string.no_data);
+    }
 
     // If a given GATT characteristic is selected, check for supported features.  This sample
     // demonstrates 'Read' and 'Notify' features.  See
@@ -148,12 +166,6 @@ public class BleControlFragment extends BleDemoFragment {
 
     }
 
-    private void clearUI() {
-        mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-        mDataField.setText(R.string.no_data);
-    }
-
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -174,6 +186,7 @@ public class BleControlFragment extends BleDemoFragment {
             case R.id.menu_connect:
                 queueBluetoothRequest(BluetoothDemoService.BLE_CONNECT_TO_PERIPHERAL,
                         mDeviceAddress);
+                mLlProgressInd.setVisibility(View.VISIBLE);
                 return true;
             case R.id.menu_disconnect:
                 queueBluetoothRequest(BluetoothDemoService.BLE_DISCONNECT_PERIPHERAL, null);
@@ -185,44 +198,71 @@ public class BleControlFragment extends BleDemoFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Otto event from BluetoothDemoService fired when this devices connects to Ble peripheral
+     * @param event
+     */
     @Subscribe
     public void onBleConnected(BleConnected event) {
         mConnected = true;
         updateConnectionState(R.string.connected);
         getActivity().invalidateOptionsMenu();
+        mLlProgressInd.setVisibility(View.GONE);
     }
 
+
+    /**
+     * Otto event from BluetoothDemoService fired when this devices disconnects from Ble peripheral
+     * @param event
+     */
     @Subscribe
     public void onBleDisconnected(BleDisconnected event) {
-        mConnected = false;
-        updateConnectionState(R.string.disconnected);
-        getActivity().invalidateOptionsMenu();
-        clearUI();
+        resetUI();
     }
 
+
+    /**
+     * Otto event from BluetoothDemoService fired when Ble peripheral services discovered
+     * @param event
+     */
     @Subscribe
     public void onBleServicesDiscovered(BleServicesDiscovered event) {
         queueBluetoothRequest(BluetoothDemoService.BLE_GET_SERVICES, null);
     }
 
+
+    /**
+     * Otto event from BluetoothDemoService fired when Ble peripheral services received
+     * @param event
+     */
     @Subscribe
-    public void onBleSupportedGattServicies(BleSupportedGattServicies event) {
+    public void onBleSupportedGattServices(BleSupportedGattServicies event) {
         displayGattServices(event.getBluetoothGattServices());
     }
 
+    /**
+     * Otto event from BluetoothDemoService fired when Ble peripheral service has responded to
+     * this apps read request
+     * @param event
+     */
     @Subscribe
     public void onBleCharacteristicRead(BleCharacteristicRead event) {
         displayData(event.getCharacteristic());
     }
 
+    /**
+     * Otto event from BluetoothDemoService fired when Ble peripheral service has responded to
+     * this apps request to be notified when a characteristic value has changed
+     * @param event
+     */
+    @Subscribe
+    public void onBleCharacteristicChanged(BleCharacteristicChanged event){
+        displayData(event.getCharacteristic());
+    }
+
 
     private void updateConnectionState(final int resourceId) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
                 mConnectionState.setText(resourceId);
-            }
-        });
     }
 
     private void displayData(BluetoothGattCharacteristic characteristic) {
@@ -263,10 +303,13 @@ public class BleControlFragment extends BleDemoFragment {
         return "";
     }
 
-    // Demonstrates how to iterate through the supported GATT Services/Characteristics.
-    // In this sample, we populate the data structure that is bound to the ExpandableListView
-    // on the UI.
 
+    /**
+     * Demonstrates how to iterate through the supported GATT Services/Characteristics.
+     * In this sample, we populate the data structure that is bound to the ExpandableListView
+     * on the UI.
+     * @param gattServices List of available services on the peripheral(server)
+     */
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
         String uuid = null;

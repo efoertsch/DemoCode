@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context=".bluetooth.BleHeartRatePeripheralFragment">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/rlHeartRate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,15 +25,16 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/lblHeartRate"
-            android:ems="5"
+            android:ems="3"
             android:digits="0123456789"
             android:maxLength="3"
+            android:imeOptions="actionSend"
             android:inputType="number"
             android:text="72"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/rlHeartRate"
@@ -56,6 +57,6 @@
             android:text="@string/not_connected"
             android:layout_toRightOf="@+id/lblBleClient"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>
