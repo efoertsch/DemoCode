@@ -1,20 +1,7 @@
 package com.fisincorporated.democode.bluetooth;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,10 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fisincorporated.democode.R;
+import com.fisincorporated.democode.bluetoothevents.BleScanEnded;
+import com.fisincorporated.democode.bluetoothevents.BleScanResultEvent;
 import com.fisincorporated.democode.demoui.DemoDrillDownFragment;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 /**
  * Start Ble scanning and display advertising packets
@@ -41,29 +31,11 @@ import java.util.List;
  * Handles scanning for both pre and post 5.0 Ble devices.
  */
 @TargetApi(18)
-public class BleScanFragment extends DemoDrillDownFragment {
+public class BleScanFragment extends BleDemoFragment {
     protected static final String TAG = "BleScanFragment";
-    private static final int REQUEST_ENABLE_BT = 1;
-    private BluetoothAdapter mBluetoothAdapter;
     private LeDeviceListAdapter mLeDeviceListAdapter;
-    protected static final String lineSeparator = System
-            .getProperty("line.separator");
-    private ArrayList<BluetoothDevice> mDeviceList =
-            new ArrayList<BluetoothDevice>();
-    private ArrayList<BleScanResult> mBleScanResultList = new ArrayList<>();
-    private BluetoothLeScanner mBluetoothLeScanner = null;
-    private ScanSettings mSettings;
-    private List<ScanFilter> mFilters;
-    private ScanCallback mScanCallback = null;
-
-
     private ListView mLvScanList;
     private boolean mScanning;
-    private Handler mHandler;
-
-    // Stops scanning after 30 seconds.
-    private static final long SCAN_PERIOD = 30000;
-
 
     public BleScanFragment() {
         // Required empty public constructor
@@ -82,28 +54,8 @@ public class BleScanFragment extends DemoDrillDownFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mHandler = new Handler();
-        Log.d(TAG, "Package :" + this.getClass().getPackage().getName());
+        //Log.d(TAG, "Package :" + this.getClass().getPackage().getName());
 
-
-        // Use this check to determine whether BLE is supported on the device.
-        if (!getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(getActivity(), R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-        }
-
-        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
-        // BluetoothAdapter through BluetoothManager.
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) getActivity().getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
-
-        // Checks if Bluetooth is supported on the device.
-        if (mBluetoothAdapter == null) {
-            Toast.makeText(getActivity(), R.string.bluetooth_not_supported, Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-            return;
-        }
     }
 
     @Override
@@ -118,24 +70,15 @@ public class BleScanFragment extends DemoDrillDownFragment {
                 final BleScanResult bleScanResult = mLeDeviceListAdapter.getDevice(position);
                 if (bleScanResult == null) return;
                 Bundle bundle = new Bundle();
-                bundle.putString( DemoDrillDownFragment.NEXT_FRAGMENT,BleControlFragment.class.getName() );
-                bundle.putString(BleControlFragment.EXTRAS_DEVICE_ADDRESS,bleScanResult.getDevice().getAddress() );
-                bundle.putString(BleControlFragment.EXTRAS_DEVICE_NAME , bleScanResult.getDevice().getName());
-                if (mDemoCallbacks != null){
+                bundle.putString(DemoDrillDownFragment.NEXT_FRAGMENT, BleControlFragment.class.getName());
+                bundle.putString(BleControlFragment.EXTRAS_DEVICE_ADDRESS, bleScanResult.getDevice().getAddress());
+                bundle.putString(BleControlFragment.EXTRAS_DEVICE_NAME, bleScanResult.getDevice().getName());
+                if (mDemoCallbacks != null) {
                     mDemoCallbacks.createAndDisplayFragment(bundle);
+                } else {
+                    Toast.makeText(getActivity(), R.string.callback_not_available, Toast.LENGTH_SHORT).show();
                 }
-                else
-                {
-                    Toast.makeText(getActivity(),R.string.callback_not_available,Toast.LENGTH_SHORT).show();
-                }
-
-                if (mScanning) {
-                    scanLeDevice(false);
-                }
-//                final Intent intent = new Intent(getActivity(), DeviceControlActivity.class);
-//                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, bleScanResult.getDevice().getName());
-//                intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, bleScanResult.getDevice().getAddress());
-                //startActivity(intent);
+                scanLeDevice(false);
             }
         });
 
@@ -185,25 +128,7 @@ public class BleScanFragment extends DemoDrillDownFragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
-        // fire an intent to display a dialog asking the user to grant permission to enable it.
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        } else {
-
-            if (android.os.Build.VERSION.SDK_INT >= 21) {
-                mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-                mSettings = new ScanSettings.Builder()
-                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .build();
-                mFilters = new ArrayList<ScanFilter>();
-                getScanCallback();
-            }
-            scanLeDevice(true);
-        }
-
+        scanLeDevice(true);
 
 
     }
@@ -211,92 +136,47 @@ public class BleScanFragment extends DemoDrillDownFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
-            scanLeDevice(false);
-        }
+        scanLeDevice(false);
         mLeDeviceListAdapter.clear();
     }
 
 
     /**
      * Turn on or off scanning
+     *
      * @param enable
      */
     private void scanLeDevice(final boolean enable) {
+        mScanning = enable;
         if (enable) {
-            // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mScanning = false;
-                    if (Build.VERSION.SDK_INT < 21) {
-                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                    } else {
-                        mBluetoothLeScanner.stopScan(mScanCallback);
-
-                    }
-
-                }
-            }, SCAN_PERIOD);
-            mScanning = true;
-            if (Build.VERSION.SDK_INT < 21) {
-                mBluetoothAdapter.startLeScan(mLeScanCallback);
-            } else {
-                mBluetoothLeScanner.startScan(mFilters, mSettings, mScanCallback);
-            }
-
+            queueBluetoothRequest(BluetoothDemoService.BLE_START_SCAN, null);
         } else {
-            mScanning = false;
-            if (Build.VERSION.SDK_INT < 21) {
-                mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            } else {
-                mBluetoothLeScanner.stopScan(mScanCallback);
-            }
+            queueBluetoothRequest(BluetoothDemoService.BLE_STOP_SCAN, null);
         }
+        getActivity().invalidateOptionsMenu();
     }
 
     /**
-     * This callback is used for versions 18->20
+     * Fired when service is scanning for Ble devices and finds on
+     *
+     * @param event BleScanResultEvent
      */
-    private BluetoothAdapter.LeScanCallback mLeScanCallback =
-            new BluetoothAdapter.LeScanCallback() {
-                @Override
-                public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecordBytes) {
-                    BleScanResult bleScanResult = new BleScanResult(device,scanRecordBytes,   rssi);
-                    Log.i(TAG,"BluetoothAdapter.LeScanCallback()" + bleScanResult.getAddress());
-                    updateScanDisplay(bleScanResult);
-                }
-            };
-
-
-    /**
-     * This callback is used for versions 21+
-     */
-    @TargetApi(21)
-    private ScanCallback getScanCallback() {
-        if (mScanCallback == null)
-            mScanCallback = new ScanCallback() {
-                @Override
-                public void onScanResult(int callbackType, ScanResult result) {
-                    updateScanDisplay(new BleScanResult(result));
-                }
-
-                @Override
-                public void onBatchScanResults(List<ScanResult> results) {
-                    for (ScanResult sr : results) {
-                        Log.i(TAG, "onBatchScanResults:" + sr.toString());
-                    }
-                }
-
-                @Override
-                public void onScanFailed(int errorCode) {
-                    Log.e(TAG, "Scan Failed Error Code: " + errorCode);
-                }
-            };
-        return mScanCallback;
+    @Subscribe
+    public void onBleScanResultEvent(BleScanResultEvent event) {
+        updateScanDisplay(event.getBleScanResult());
     }
 
-    public void updateScanDisplay(final BleScanResult bleScanResult){
+    /**
+     * Recieved if server stops Ble discovery
+     */
+    @Subscribe
+    public void onBleScanEnded(BleScanEnded event){
+        mScanning = false;
+        getActivity().invalidateOptionsMenu();
+    }
+
+
+    public void updateScanDisplay(final BleScanResult bleScanResult) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -319,7 +199,7 @@ public class BleScanFragment extends DemoDrillDownFragment {
 
         public void addDevice(BleScanResult bleScanResult) {
             boolean addScanResult = true;
-            for(BleScanResult listResult : mLeDevices){
+            for (BleScanResult listResult : mLeDevices) {
                 if (listResult.getDevice().getAddress().equals(bleScanResult.getDevice().getAddress())) {
                     addScanResult = false;
                 }
@@ -328,6 +208,7 @@ public class BleScanFragment extends DemoDrillDownFragment {
                 mLeDevices.add(bleScanResult);
                 Log.i(TAG, " Number of devices:" + mLeDevices.size());
             }
+            Collections.sort(mLeDevices);
         }
 
         public BleScanResult getDevice(int position) {

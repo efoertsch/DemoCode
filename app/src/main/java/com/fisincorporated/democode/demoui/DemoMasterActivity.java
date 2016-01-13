@@ -17,6 +17,10 @@ import com.fisincorporated.democode.R;
  */
 public abstract class  DemoMasterActivity extends AppCompatActivity implements IDemoCallbacks {
     private static final String TAG = DemoMasterActivity.class.getSimpleName();
+    public static final String FRAGMENT_CLASS_NAME = "com.fisincorporated.democode.FRAGMENT_CLASS_NAME";
+    public static final String FRAGMENT_TITLE_BAR_NAME = "com.fisincorporated.democode.FRAGMENT_TITLE_BAR_NAME";
+    protected String fragmentClassName ;
+    protected String actionBarTitle ;
 
     protected ActionBar actionBar;
     //private SearchView searchView = null;
@@ -36,6 +40,7 @@ public abstract class  DemoMasterActivity extends AppCompatActivity implements I
         //setContentView(R.layout.activity_fragment);
         // if for v11 and above just getFragmentMananger rather than getSupportFragmentManager()
         setContentView(getLayoutResId());
+        lookForArguments(savedInstanceState);
         // do whatever needed for action bar https://developer.android.com/guide/topics/ui/actionbar.html#SplitBar
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -46,6 +51,27 @@ public abstract class  DemoMasterActivity extends AppCompatActivity implements I
             fm.beginTransaction().add(R.id.fragmentContainer, fragment)
                     .commit();
         }
+    }
+
+    private void lookForArguments(Bundle savedInstanceState) {
+        Bundle bundle;
+        if (getIntent() != null) {
+             fragmentClassName = getIntent().getStringExtra(FRAGMENT_CLASS_NAME);
+             actionBarTitle = getIntent().getStringExtra(FRAGMENT_TITLE_BAR_NAME);
+        }
+        if (savedInstanceState != null) {
+             // nothing yet
+        }
+    }
+
+    /**
+     * Save importtatn values over orientation change
+     * @param savedInstanceState
+     */
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // nothing yet
+        super.onSaveInstanceState(savedInstanceState);
+
     }
 
 

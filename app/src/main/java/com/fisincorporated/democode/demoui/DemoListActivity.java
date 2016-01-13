@@ -210,6 +210,9 @@ public class DemoListActivity extends AppCompatActivity implements
         // In single-pane mode OR double pane but you don't have a fragment.
         // Simply start the detail activity for the selected item ID.
         Intent intent = createIntentForClass(demoTopicInfo.getActivity());
+        // Following 2 values will be null if you don't have fragment
+        intent.putExtra(DemoMasterActivity.FRAGMENT_CLASS_NAME, demoTopicInfo.getFragment() );
+        intent.putExtra(DemoMasterActivity.FRAGMENT_TITLE_BAR_NAME, demoTopicInfo.getDescription());
         if (intent == null) {
             // Problem creating intent
             return;
