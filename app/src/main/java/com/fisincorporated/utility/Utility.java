@@ -2,6 +2,9 @@ package com.fisincorporated.utility;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothProfile;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.AnimRes;
 
 /**
  * Created by ericfoertsch on 1/8/16.
@@ -84,6 +87,24 @@ public class Utility {
         hexChars[0] = HEX_CHARS[v >>> 4];
         hexChars[1] = HEX_CHARS[v & 0x0F];
         return hexChars;
+    }
+
+    private static final String SHARED_PREFERENCES = "shared_preferences";
+    public static final String EXIT_ANIMATION = "com.fisincorporated.EXIT_ANIMATION";
+    public static final String ENTER_ANIMATION = "com.fisincorporated.ENTER_ANIMATION";
+
+    public static void storeAnimation(Context context, String key, @AnimRes int animRes) {
+        SharedPreferences prefs = context
+                .getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        prefs.edit().putInt(key, animRes).apply();
+
+    }
+
+    public static int  getAnimationPreference(Context context, String key, @AnimRes int defaultValue){
+        SharedPreferences prefs = context
+                .getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE);
+     return prefs.getInt(key, 0);
+
     }
 
 

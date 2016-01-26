@@ -71,19 +71,6 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
-            android:name=".bluetooth.ClassicBluetoothDiscoveryActivity"
-            android:parentActivityName=".demoui.DemoListActivity"
-            android:uiOptions="splitActionBarWhenNarrow">
-
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".demoui.DemoListActivity" />
-            <meta-data
-                android:name="android.support.UI_OPTIONS"
-                android:value="splitActionBarWhenNarrow" />
-        </activity>
-        <activity
             android:name=".bluetooth.ListSearchBluetoothActivity"
             android:parentActivityName=".demoui.DemoListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
@@ -113,45 +100,6 @@
         </activity>
         <activity
             android:name=".handlingxml.ActivityForParserOutput"
-            android:parentActivityName=".FunctionListActivity"
-            android:uiOptions="splitActionBarWhenNarrow">
-
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
-            <meta-data
-                android:name="android.support.UI_OPTIONS"
-                android:value="splitActionBarWhenNarrow" />
-        </activity>
-        <activity
-            android:name=".threads.IntentServiceActivity"
-            android:parentActivityName=".FunctionListActivity"
-            android:uiOptions="splitActionBarWhenNarrow">
-
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
-            <meta-data
-                android:name="android.support.UI_OPTIONS"
-                android:value="splitActionBarWhenNarrow" />
-        </activity>
-        <activity
-            android:name=".threads.HandlerThreadActivity"
-            android:parentActivityName=".FunctionListActivity"
-            android:uiOptions="splitActionBarWhenNarrow">
-
-            <!-- Parent activity meta-data to support API level 7+ -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
-            <meta-data
-                android:name="android.support.UI_OPTIONS"
-                android:value="splitActionBarWhenNarrow" />
-        </activity>
-        <activity
-            android:name=".threads.AsyncTaskActivity"
             android:parentActivityName=".FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
@@ -236,6 +184,11 @@
             android:name=".bluetooth.BluetoothDemoService"
             android:enabled="true"
             android:exported="false"></service>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

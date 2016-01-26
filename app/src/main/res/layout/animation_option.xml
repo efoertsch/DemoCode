@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New RadioButton"
+        android:id="@+id/rbtnAnimation"
+        android:layout_marginTop="@dimen/listview_row_margin"
+        android:textSize="@dimen/standard_text_size"
+        android:clickable="false"
+        android:focusable="false"/>
+</LinearLayout>

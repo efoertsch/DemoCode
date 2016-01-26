@@ -1,18 +1,18 @@
 package com.fisincorporated.democode.demoui;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.fisincorporated.democode.R;
+import com.fisincorporated.utility.Utility;
 
 /**
  * DemoListActivity is a 'generic' activity in that it can
@@ -20,11 +20,11 @@ import com.fisincorporated.democode.R;
  * 2. Based on the selected demo item drill down to display a sub list OR
  * 3. Display the selected demo topic either as a fragment or activity OR
  * 4. If the demo fragment itself allows 'drill down' allow the demo fragment to be
- *    replaced with the drill down fragment.
- *  This is a bit of an experiment to see how generic we can make a code demo app.
+ * replaced with the drill down fragment.
+ * This is a bit of an experiment to see how generic we can make a code demo app.
  */
-public class DemoListActivity extends AppCompatActivity implements
-        IDemoCallbacks {
+
+public class DemoListActivity extends DemoMasterActivity  {
     private static final String TAG = DemoListActivity.class.getSimpleName();
     private static final String MASTER_FRAGMENT_TITLE = "com.fisincorporated.democode.demoui.MASTER_FRAGMENT_TITLE";
     private static final String DETAIL_FRAGMENT_TITLE = "com.fisincorporated.democode.demoui.DETAIL_FRAGMENT_TITLE";
@@ -37,6 +37,7 @@ public class DemoListActivity extends AppCompatActivity implements
     protected ActionBar mActionBar;
     private TextView mTvActionBarSubHeader;
     private TextView mTvFragmentHeaderText;
+
     /**
      * A JSON list of the demo topics that can be selected
      */
@@ -57,20 +58,16 @@ public class DemoListActivity extends AppCompatActivity implements
      */
     private Fragment mPreviousFragment = null;
 
-    //added for tablet
-    protected int getLayoutResId() {
-        return R.layout.activity_masterdetail;
-    }
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
 
         mTvActionBarSubHeader = (TextView) findViewById(R.id.tvActionBarSubHeader);
         mTvFragmentHeaderText = (TextView) findViewById(R.id.tvFragmentHeaderText);
-        mActionBar = getSupportActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true);
+
         // See if intent had list of fragments (to be passed to list fragment)
         // Note mDemoListJson may be null if just starting this as main activity
         mDemoListJson = getIntent().getStringExtra(DemoTopicList.DEMO_LIST);
@@ -100,7 +97,19 @@ public class DemoListActivity extends AppCompatActivity implements
             fm.beginTransaction().add(R.id.fragmentContainer, fragment)
                     .commit();
         }
+
+        mExitAnimation = Utility.getAnimationPreference(this, Utility.EXIT_ANIMATION,0);
+        mEnterAnimation = Utility.getAnimationPreference(this, Utility.ENTER_ANIMATION,0);
     }
+
+    protected Fragment createFragment(){
+        Fragment fragment =  new DemoListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(DemoTopicList.DEMO_LIST, mDemoListJson);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
 
 
     @Override
@@ -135,26 +144,7 @@ public class DemoListActivity extends AppCompatActivity implements
 
     }
 
-    /**
-     * An Ooops occurred. Display AlertDialog with error msg.
-     * @param title
-     * @param description
-     */
 
-    private void displayError(String title, String description) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(description)
-                .setTitle(title)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        mErrorAlertDialog.dismiss();
-                        mErrorAlertDialog = null;
-                    }
-                });
-        mErrorAlertDialog = builder.create();
-        mErrorAlertDialog.show();
-        mErrorAlertDialog.setCanceledOnTouchOutside(false);
-    }
 
     /**
      * A demo topic has been selected. Determine if you need to
@@ -165,6 +155,7 @@ public class DemoListActivity extends AppCompatActivity implements
     public void onItemSelected(DemoTopicInfo demoTopicInfo) {
         // See if demo topic has another demolist (still drilling down in list of demo)
         // and if so then call the activity passing it the list
+        getAnimationsPreferences();
         if (demoTopicInfo.getDemoListClassName() != null) {
             Intent intent = createIntentForClass(demoTopicInfo.getActivity());
             if (intent == null) {
@@ -173,7 +164,7 @@ public class DemoListActivity extends AppCompatActivity implements
             }
             intent.putExtra(DemoTopicList.DEMO_LIST, demoTopicInfo.getDemoListClassName());
             intent.putExtra(MASTER_FRAGMENT_TITLE, demoTopicInfo.getDescription());
-            startActivity(intent);
+            startActivityWithTransition(intent);
             return;
         }
         // Here if no new drill down list
@@ -190,12 +181,16 @@ public class DemoListActivity extends AppCompatActivity implements
                 try {
                     fragment = (Fragment) Class.forName(fragmentClassName).newInstance();
                     //fragment.setArguments(arguments);
-                    getSupportFragmentManager().beginTransaction()
-                            //.replace(R.id.item_detail_container, fragment).commit();
-                            .replace(R.id.detailFragmentContainer, fragment).commit();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    // MUST set transition BEFORE add/replace
+                    setFragmentTransition(ft);
+                    //.replace(R.id.item_detail_container, fragment).commit();
+                    ft.replace(R.id.detailFragmentContainer, fragment);
                     mDetailFragmentTitle = demoTopicInfo.getDescription();
                     mTvFragmentHeaderText.setText(mDetailFragmentTitle);
                     mTvFragmentHeaderText.setVisibility(View.VISIBLE);
+
+                    ft.commit();
                 } catch (InstantiationException e) {
                     displayError("InstantiationException", demoTopicInfo.getFragment() + " " + e.toString());
                 } catch (IllegalAccessException e) {
@@ -211,18 +206,25 @@ public class DemoListActivity extends AppCompatActivity implements
         // Simply start the detail activity for the selected item ID.
         Intent intent = createIntentForClass(demoTopicInfo.getActivity());
         // Following 2 values will be null if you don't have fragment
-        intent.putExtra(DemoMasterActivity.FRAGMENT_CLASS_NAME, demoTopicInfo.getFragment() );
+        intent.putExtra(DemoMasterActivity.FRAGMENT_CLASS_NAME, demoTopicInfo.getFragment());
         intent.putExtra(DemoMasterActivity.FRAGMENT_TITLE_BAR_NAME, demoTopicInfo.getDescription());
         if (intent == null) {
             // Problem creating intent
             return;
         }
+        startActivityWithTransition(intent);
+    }
+
+
+    private void startActivityWithTransition(Intent intent) {
         startActivity(intent);
+        doStartTransition();
     }
 
 
     /**
      * Create new fragment and display it
+     *
      * @param fragmentBundle - contains name of fragment to display and the args to pass to it
      */
     public void createAndDisplayFragment(Bundle fragmentBundle) {
@@ -246,32 +248,39 @@ public class DemoListActivity extends AppCompatActivity implements
 
     /**
      * Display 'drill down' fragment in appropriate fragment container
+     *
      * @param newFragment
      */
     private void displayFragment(Fragment newFragment) {
         FragmentManager fm = getSupportFragmentManager();
-        int fragmentId ;
+        FragmentTransaction ft;
+        int fragmentId;
         // Are we on tablet or not
         if (mTwoPane) {
-            fragmentId  = R.id.detailFragmentContainer;
-        }
-        else {
+            fragmentId = R.id.detailFragmentContainer;
+        } else {
             fragmentId = R.id.fragmentContainer;
         }
         mPreviousFragment = fm.findFragmentById(fragmentId);
         if (mPreviousFragment == null) {
-            fm.beginTransaction()
-                    .add(fragmentId, newFragment, "option")
-                    .commit();
+            ft = getSupportFragmentManager().beginTransaction();
+            // fragment transition MUST be set before ft.add
+            setFragmentTransition(ft);
+            ft.add(fragmentId, newFragment, "option").addToBackStack(null);
+            ft.commit();
+
         } else {
-            fm.beginTransaction()
-                    .replace(fragmentId, newFragment, "option")
-                    .commit();
+            ft = getSupportFragmentManager().beginTransaction();
+            // fragment transition MUST be set before ft.replace
+            setFragmentTransition(ft);
+            ft.replace(fragmentId, newFragment, "option").addToBackStack(null);
+            ft.commit();
         }
     }
 
     /**
      * Create new intent based on class name
+     *
      * @param className
      * @return
      */
@@ -283,4 +292,8 @@ public class DemoListActivity extends AppCompatActivity implements
         }
         return null;
     }
+
+
+
+
 }

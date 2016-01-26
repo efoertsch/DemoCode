@@ -3,6 +3,8 @@ package com.fisincorporated.democode.demoui;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
+import com.fisincorporated.interfaces.IDemoCallbacks;
+
 /**
  * A simple {@link Fragment} demo 'drill down' class.
  *

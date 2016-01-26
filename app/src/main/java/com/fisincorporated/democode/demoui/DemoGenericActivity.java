@@ -1,9 +1,9 @@
 package com.fisincorporated.democode.demoui;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.fisincorporated.democode.R;
@@ -15,11 +15,21 @@ import com.fisincorporated.democode.R;
  */
 public class DemoGenericActivity extends DemoMasterActivity {
     private static final String TAG = DemoGenericActivity.class.getSimpleName();
-    private AlertDialog mErrorAlertDialog;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getAnimationsPreferences();
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
+        if (fragment == null) {
+            fragment = createFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            setFragmentTransition(ft);
+            ft.add(R.id.fragmentContainer, fragment).commit();
+        }
+
 
     }
 
@@ -27,13 +37,12 @@ public class DemoGenericActivity extends DemoMasterActivity {
     @Override
     protected Fragment createFragment() {
         // create fragment based on values passed in on intent
-        Fragment fragment = null ;
+        Fragment fragment = null;
         try {
             fragment = (Fragment) Class.forName(fragmentClassName).newInstance();
-            if (actionBarTitle != null && !actionBarTitle.equals("")){
+            if (actionBarTitle != null && !actionBarTitle.equals("")) {
                 actionBar.setTitle(actionBarTitle);
-            }
-            else{
+            } else {
                 actionBar.setTitle(TAG);
             }
 
@@ -51,29 +60,14 @@ public class DemoGenericActivity extends DemoMasterActivity {
     }
 
     @Override
-    public void onItemSelected(DemoTopicInfo demoTopicInfo) {
-        Log.w(TAG, "onItemSelected callback called but no logic defined");
+    public void onBackPressed() {
+        super.onBackPressed();
+        doExitTransition();
     }
 
-    // TODO refactor this activity with other demo activities with common code
-    /**
-     * An Ooops occurred. Display AlertDialog with error msg.
-     * @param title
-     * @param description
-     */
-    private void displayError(String title, String description) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(description)
-                .setTitle(title)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        mErrorAlertDialog.dismiss();
-                        mErrorAlertDialog = null;
-                    }
-                });
-        mErrorAlertDialog = builder.create();
-        mErrorAlertDialog.show();
-        mErrorAlertDialog.setCanceledOnTouchOutside(false);
+    @Override
+    public void onItemSelected(DemoTopicInfo demoTopicInfo) {
+        Log.w(TAG, "onItemSelected callback called but no logic defined");
     }
 
 
