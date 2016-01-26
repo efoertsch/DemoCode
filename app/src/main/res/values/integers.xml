@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  Used for activity/fragment transitions -->
+    <integer name="standard_transition_duration">350</integer>
+</resources>
+

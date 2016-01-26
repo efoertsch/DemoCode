@@ -14,6 +14,8 @@ public class MainDemoTopicList extends DemoTopicList {
 
         addItem(new DemoTopicInfo("XML Processing", "com.fisincorporated.democode.demoui.DemoListActivity", "com.fisincorporated.democode.demoui.DemoListFragment", "com.fisincorporated.democode.handlingxml.XMLDemoTopicList"));
         addItem(new DemoTopicInfo("ContentProvider", "com.fisincorporated.democode.demoui.DemoListActivity", "com.fisincorporated.democode.demoui.DemoListFragment", "com.fisincorporated.democode.contentprovider.ContentProviderDemoTopicList"));
+        addItem(new DemoTopicInfo("UI", "com.fisincorporated.democode.demoui.DemoListActivity", "com.fisincorporated.democode.demoui.DemoListFragment", "com.fisincorporated.democode.ui.UiDemoTopicList"));
+
         //addItem(new DemoTopicInfo("ActivityTemplate (Activity only, no Fragment)", "com.fisincorporated.democode.ActivityTemplate", null,null));
         //addItem(new DemoTopicInfo("ActivityWithFragmentTemplate (Activity uses fragment)","com.fisincorporated.democode.ActivityWithFragmentTemplate", "com.fisincorporated.democode.FragmentTemplate", null));
         //addItem(new DemoTopicInfo("Eclipse Master/Detail template", "com.fisincorporated.democode.ItemListActivity", "com.fisincorporated.democode.ItemListFragment", null));

@@ -1,14 +1,10 @@
 
 package com.fisincorporated.democode;
 
-import com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryActivity;
 import com.fisincorporated.democode.bluetooth.ListSearchBluetoothActivity;
 import com.fisincorporated.democode.contentprovider.ContactsActivity;
 import com.fisincorporated.democode.demoui.DemoListActivity;
 import com.fisincorporated.democode.handlingxml.ActivityForParserOutput;
-import com.fisincorporated.democode.threads.AsyncTaskActivity;
-import com.fisincorporated.democode.threads.HandlerThreadActivity;
-import com.fisincorporated.democode.threads.IntentServiceActivity;
 
 
  
@@ -18,11 +14,7 @@ public class FunctionListFragment extends MainMenuListFragment {
     void prepareMenu() {
    	 addMenuItem("ThreadActivityList",DemoListActivity.class);
    	 addMenuItem("ItemListActivity", ItemListActivity.class);
-   	 addMenuItem("Bluetooth Demo", ClassicBluetoothDiscoveryActivity.class);
    	 addMenuItem("Bluetooth Demo2", ListSearchBluetoothActivity.class);
-   	 addMenuItem("IntentServiceDemo", IntentServiceActivity.class);
-   	 addMenuItem("HandlerThreadDemo", HandlerThreadActivity.class);
-   	 addMenuItem("AsyncTaskActivity", AsyncTaskActivity.class);
        addMenuItem("ActivityTemplate (Activity only, no Fragment)", ActivityTemplate.class);
        addMenuItem("ActivityWithFragmentTemplate (Activity uses fragment)", ActivityWithFragmentTemplate.class);
        addMenuItem("Activity calling XMLPullParser", ActivityForParserOutput.class);

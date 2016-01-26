@@ -59,4 +59,23 @@
     <string name="not_connected">Not connected</string>
     <string name="must_be_at_api_21">Must be at API(21)/Lollipop or newer to use this demo</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save">Save</string>
+
+    <!-- Strings for setting transition animations -->
+    <string name="device_default">Device default</string>
+    <string name="no_scale_fade_in">No scale fade in</string>
+    <string name="no_scale_fade_out">No scale fade out</string>
+    <string name="slide_down_to_bottom">Slide down to bottom</string>
+    <string name="slide_in_from_left">Slide in from left</string>
+    <string name="slide_in_from_right">Slide in from right</string>
+    <string name="slide_out_to_left">Slide out to left</string>
+    <string name="slide_out_to_right">Slide  out to right</string>
+    <string name="slide_up_from_bottom">Slide up from bottom</string>
+    <string name="exit_animation">Exit Animation</string>
+    <string name="enter_animation">Enter Animation</string>
+
+
+
 </resources>

@@ -1,5 +1,7 @@
 package com.fisincorporated.democode.demoui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,20 +11,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.fisincorporated.democode.R;
+import com.fisincorporated.interfaces.IDemoCallbacks;
+import com.fisincorporated.utility.Utility;
 
 /**
- * Master demo code activity that can implement fragments either with
- * 1. fragment for small screen (phone) or
- * 2. fragments (parent/child) if on larger screen (tablet)
+ * Master demo code activity that can implement fragment based on
+ * fragment class passed in
  */
-public abstract class  DemoMasterActivity extends AppCompatActivity implements IDemoCallbacks {
+public abstract class DemoMasterActivity extends AppCompatActivity implements IDemoCallbacks  {
     private static final String TAG = DemoMasterActivity.class.getSimpleName();
     public static final String FRAGMENT_CLASS_NAME = "com.fisincorporated.democode.FRAGMENT_CLASS_NAME";
     public static final String FRAGMENT_TITLE_BAR_NAME = "com.fisincorporated.democode.FRAGMENT_TITLE_BAR_NAME";
-    protected String fragmentClassName ;
-    protected String actionBarTitle ;
+    protected String fragmentClassName;
+    protected String actionBarTitle;
+    private AlertDialog mErrorAlertDialog;
+    protected int mExitAnimation;
+    protected int mEnterAnimation;
 
     protected ActionBar actionBar;
+
     //private SearchView searchView = null;
     //private SearchManager searchManager = null;
 
@@ -43,30 +50,26 @@ public abstract class  DemoMasterActivity extends AppCompatActivity implements I
         lookForArguments(savedInstanceState);
         // do whatever needed for action bar https://developer.android.com/guide/topics/ui/actionbar.html#SplitBar
         actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-        if (fragment == null) {
-            fragment = createFragment();
-            fm.beginTransaction().add(R.id.fragmentContainer, fragment)
-                    .commit();
+        if (actionBarTitle != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
     }
 
     private void lookForArguments(Bundle savedInstanceState) {
-        Bundle bundle;
         if (getIntent() != null) {
-             fragmentClassName = getIntent().getStringExtra(FRAGMENT_CLASS_NAME);
-             actionBarTitle = getIntent().getStringExtra(FRAGMENT_TITLE_BAR_NAME);
+            fragmentClassName = getIntent().getStringExtra(FRAGMENT_CLASS_NAME);
+            actionBarTitle = getIntent().getStringExtra(FRAGMENT_TITLE_BAR_NAME);
         }
-        if (savedInstanceState != null) {
-             // nothing yet
-        }
+//        if (savedInstanceState != null) {
+//            // nothing yet
+//        }
     }
 
     /**
-     * Save importtatn values over orientation change
-     * @param savedInstanceState
+     * Save important values over orientation change
+     *
+     * @param savedInstanceState  important stuff
      */
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // nothing yet
@@ -77,7 +80,7 @@ public abstract class  DemoMasterActivity extends AppCompatActivity implements I
 
     @Override
     public void createAndDisplayFragment(Bundle fragmentBundle) {
-        Fragment fragment = null;
+        Fragment fragment;
         String fragmentClassName = fragmentBundle.getString(DemoDrillDownFragment.NEXT_FRAGMENT);
         if (fragmentClassName == null) {
             Log.d(TAG, "createAndDisplayFragment called but no DemoDrillDownFragment.NEXT_FRAGMENT string found in bundle");
@@ -90,7 +93,7 @@ public abstract class  DemoMasterActivity extends AppCompatActivity implements I
             fragment.setArguments(fragmentBundle);
         } catch (ClassNotFoundException cnfe) {
             return;
-        } catch (java.lang.InstantiationException e) {
+        } catch (InstantiationException e) {
             return;
         } catch (IllegalAccessException e) {
             return;
@@ -98,17 +101,79 @@ public abstract class  DemoMasterActivity extends AppCompatActivity implements I
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment oldDetail = fm.findFragmentById(R.id.fragmentContainer);
-
+        setFragmentTransition(ft);
         if (oldDetail != null) {
             ft.remove(oldDetail);
         }
-        if (fragment != null){
-            ft.add(R.id.fragmentContainer, fragment);
+        if (fragment != null) {
+            ft.add(R.id.fragmentContainer, fragment).addToBackStack(null);
         }
         ft.commit();
     }
 
 
+    // TODO add 5.0+ transitions
+    // For nice overview of 5.0+ transitions
+    // http://www.androiddesignpatterns.com/2014/12/activity-fragment-transitions-in-android-lollipop-part1.html
+    protected void doStartTransition() {
+        overridePendingTransition(mEnterAnimation,
+                mExitAnimation);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        doExitTransition();
+    }
+
+
+    //TODO add option to change transitions
+    // TODO add 5.0+ transitions
+    protected void doExitTransition() {
+        overridePendingTransition(mEnterAnimation,
+                mExitAnimation);
+    }
+
+    protected void setFragmentTransition(FragmentTransaction ft) {
+        ft.setCustomAnimations(mEnterAnimation, mExitAnimation);
+    }
+
+// TODO refactor this activity with other demo activities with common code
+
+    /**
+     * An Ooops occurred. Display AlertDialog with error msg.
+     *
+     * @param title       dialog title
+     * @param description error/msg description
+     */
+    protected void displayError(String title, String description) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(description)
+                .setTitle(title)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mErrorAlertDialog.dismiss();
+                        mErrorAlertDialog = null;
+                    }
+                });
+        mErrorAlertDialog = builder.create();
+        mErrorAlertDialog.show();
+        mErrorAlertDialog.setCanceledOnTouchOutside(false);
+    }
+
+    public void exitEnterTransitionsUpdated(){
+        getAnimationsPreferences();
+    }
+
+    public void getAnimationsPreferences() {
+        mExitAnimation = Utility.getAnimationPreference(this, Utility.EXIT_ANIMATION, 0);
+        mEnterAnimation = Utility.getAnimationPreference(this, Utility.ENTER_ANIMATION, 0);
+    }
+
+    public void saveAnimationPreferences() {
+        Utility.storeAnimation(this, Utility.EXIT_ANIMATION, mExitAnimation);
+        Utility.storeAnimation(this, Utility.ENTER_ANIMATION, mEnterAnimation);
+    }
 
 //uncomment/modify to implement search
 //Add the menu , in this case just search icon
