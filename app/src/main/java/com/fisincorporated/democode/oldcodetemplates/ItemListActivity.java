@@ -1,8 +1,10 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.oldcodetemplates;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
+import com.fisincorporated.democode.R;
 
 /**
  * An activity representing a list of Items. This activity has different

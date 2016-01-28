@@ -3,11 +3,16 @@ package com.fisincorporated.democode.demoui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.fisincorporated.democode.R;
 import com.fisincorporated.interfaces.IDemoCallbacks;
+import com.fisincorporated.utility.GlobalConstants;
 
 /**
  * Display a list of demo topics. Selecting a topic causes the corresponding demo code fragment to
@@ -17,13 +22,11 @@ import com.fisincorporated.interfaces.IDemoCallbacks;
  */
 public class DemoListFragment extends ListFragment  {
 
-
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-
 
     /**
      * The fragment's current callback object, which is notified of list item
@@ -36,10 +39,10 @@ public class DemoListFragment extends ListFragment  {
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
-
     private String mDemoListClassName = null;
     private DemoTopicList mDemoTopicList = new DemoTopicList();
-
+    private TextView mTvListFragmentHeader;
+    private String mDemoListDescription;
 
 
     /**
@@ -53,14 +56,34 @@ public class DemoListFragment extends ListFragment  {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lookForArguments(savedInstanceState);
+    }
 
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.demo_list, container, false);
+        mTvListFragmentHeader = (TextView) view.findViewById(R.id.tvListFragmentHeader);
+        updateSubActionBarHeader(mDemoListDescription);
+        return view;
+    }
+
+    private void updateSubActionBarHeader(String headerText) {
+        if (headerText != null && mTvListFragmentHeader != null) {
+            mTvListFragmentHeader.setText(headerText);
+            mTvListFragmentHeader.setVisibility(View.VISIBLE);
+        }
+        else {
+            if (mTvListFragmentHeader != null) {
+                mTvListFragmentHeader.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setListAdapter(new ArrayAdapter<DemoTopicInfo>(getActivity(),
+        setListAdapter(new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_list_item_activated_1, android.R.id.text1,
                 mDemoTopicList.ITEMS));
 
@@ -74,7 +97,7 @@ public class DemoListFragment extends ListFragment  {
 
     /**
      * Look for passed in arguments.
-     * @param savedInstanceState
+     * @param savedInstanceState bundle
      */
     private void lookForArguments(Bundle savedInstanceState) {
         Bundle bundle = null;
@@ -88,7 +111,8 @@ public class DemoListFragment extends ListFragment  {
             bundle = savedInstanceState;
         }
         if (bundle != null) {
-            mDemoListClassName = bundle.getString(DemoTopicList.DEMO_LIST);
+            mDemoListClassName = bundle.getString(GlobalConstants.DEMO_LIST_CLASS_NAME);
+            mDemoListDescription = bundle.getString(GlobalConstants.DEMO_LIST_TITLE);
             mDemoTopicList = null;
             if (mDemoListClassName != null) {
                 try {
@@ -111,7 +135,7 @@ public class DemoListFragment extends ListFragment  {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        // Activities cocallbackntaining this fragment must implement its callbacks.
+        // Activities containing this fragment must implement its callbacks.
         if (!(activity instanceof IDemoCallbacks)) {
             throw new IllegalStateException(
                     "Activity must implement IDemoCallbacks.");
@@ -132,32 +156,18 @@ public class DemoListFragment extends ListFragment  {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        DemoTopicInfo demoTopicInfo = (DemoTopicInfo) mDemoTopicList.ITEMS.get(position);
+        DemoTopicInfo demoTopicInfo = mDemoTopicList.ITEMS.get(position);
         mCallbacks.onItemSelected(demoTopicInfo);
-
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DemoTopicList.DEMO_LIST, mDemoListClassName );
+        outState.putString(GlobalConstants.DEMO_LIST_CLASS_NAME, mDemoListClassName );
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             // Serialize and persist the activated item position.
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
-    }
-
-    /**
-     * Turns on activate-on-click mode. When this mode is on, list items will be
-     * given the 'activated' state when touched.
-     */
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
-        // When setting CHOICE_MODE_SINGLE, ListView will automatically
-        // give items the 'activated' state when touched.
-        getListView().setChoiceMode(
-                activateOnItemClick ? ListView.CHOICE_MODE_SINGLE
-                        : ListView.CHOICE_MODE_NONE);
     }
 
     private void setActivatedPosition(int position) {

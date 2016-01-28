@@ -10,7 +10,6 @@ import java.util.Map;
  */
 public class DemoTopicList {
 	private static final long serialVersionUID = 1L;
-	public  final static String DEMO_LIST = "com.fisincorporated.democode.threads.DEMO_LIST";
 
 	public   List<DemoTopicInfo> ITEMS = new ArrayList<DemoTopicInfo>();
 	public   Map<String, DemoTopicInfo> ITEM_MAP = new HashMap<String, DemoTopicInfo>();

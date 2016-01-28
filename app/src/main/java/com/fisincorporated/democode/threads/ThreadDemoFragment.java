@@ -17,15 +17,17 @@ import com.fisincorporated.democode.R;
 public abstract class ThreadDemoFragment extends Fragment implements
 		OnClickListener {
 
-	protected static final String lineSeparator = System
+	protected static final String sLineSeparator = System
 			.getProperty("line.separator");
-	protected ProgressBar progressBar;
-	protected TextView tvProgressMsg;
-	protected Button startButton;
-	protected Button cancelButton;
-	protected Button clearButton;
-	protected ScrollView scrollViewStatus;
-	protected TextView tvStatusArea;
+	protected ProgressBar mProgressBar;
+	protected TextView mTvProgressMsg;
+	protected Button mStartButton;
+	protected Button mCancelButton;
+	protected Button mClearButton;
+	protected ScrollView mScrollViewStatus;
+	protected TextView mTvStatusArea;
+	protected TextView mTvDemoTitle;
+
 
 	public ThreadDemoFragment() {
 		super();
@@ -34,25 +36,29 @@ public abstract class ThreadDemoFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setRetainInstance(true);
+
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.thread_demo, container, false);
-		tvProgressMsg = (TextView) v.findViewById(R.id.tvProgressMsg);
-		progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-		progressBar.setMax(100);
-		startButton = (Button) v.findViewById(R.id.btnStart);
-		startButton.setOnClickListener(this);
-		cancelButton = (Button) v.findViewById(R.id.btnCancel);
-		cancelButton.setOnClickListener(this);
-		clearButton = (Button) v.findViewById(R.id.btnClear);
-		clearButton.setOnClickListener(this);
-		tvStatusArea = (TextView) v.findViewById(R.id.tvStatusArea);
-		scrollViewStatus = (ScrollView) v.findViewById(R.id.scrollViewStatus);
+		mTvProgressMsg = (TextView) v.findViewById(R.id.tvProgressMsg);
+		mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+		mProgressBar.setMax(100);
+		mStartButton = (Button) v.findViewById(R.id.btnStart);
+		mStartButton.setOnClickListener(this);
+		mCancelButton = (Button) v.findViewById(R.id.btnCancel);
+		mCancelButton.setOnClickListener(this);
+		mClearButton = (Button) v.findViewById(R.id.btnClear);
+		mClearButton.setOnClickListener(this);
+		mTvStatusArea = (TextView) v.findViewById(R.id.tvStatusArea);
+		mScrollViewStatus = (ScrollView) v.findViewById(R.id.scrollViewStatus);
+		mTvDemoTitle = (TextView) v.findViewById(R.id.tvDemoTitle);
+        mTvDemoTitle.setText(getFragmentTitle());
 		return v;
 	}
+
 
 	@Override
 	public void onClick(View v) {
@@ -69,22 +75,25 @@ public abstract class ThreadDemoFragment extends Fragment implements
 		}
 	}
 
-	protected abstract void doStart();
+
+    protected abstract String getFragmentTitle();
+
+    protected abstract void doStart();
 
 	protected abstract void doCancel();
 
 	protected void doClear() {
-		tvStatusArea.setText("");
-		tvProgressMsg.setText("");
+		mTvStatusArea.setText("");
+		mTvProgressMsg.setText("");
 
 	}
 	
 	protected void scrollToBottom() {
-		scrollViewStatus.post(new Runnable() { 
-		     public void run() {
-		         scrollViewStatus.fullScroll(View.FOCUS_DOWN);
-		     }
-		 });
+		mScrollViewStatus.post(new Runnable() {
+			public void run() {
+				mScrollViewStatus.fullScroll(View.FOCUS_DOWN);
+			}
+		});
 	}
 }
 

@@ -10,7 +10,6 @@
 
         <!-- The rest of your attributes -->
     </style>
-
     <style name="ActionBar" parent="Theme.AppCompat.Light">
         <item name="android:icon">@drawable/icon</item>
     </style>

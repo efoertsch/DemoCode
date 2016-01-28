@@ -1,4 +1,4 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.oldcodetemplates;
 
 
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
+import com.fisincorporated.democode.R;
 import com.fisincorporated.interfaces.IHandleSelectedAction;
 
 /**

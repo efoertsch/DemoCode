@@ -12,10 +12,10 @@ public class BluetoothDemoTopicList extends DemoTopicList {
 
     public BluetoothDemoTopicList() {
         // !!! Don't add .class postfix. This will give ClassNotFoundException,
-        addItem(new DemoTopicInfo("Classic BT Discovery", "com.fisincorporated.democode.demoui.DemoGenericActivity", "com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryFragment", null));
+        addItem(new DemoTopicInfo("Classic BT Discovery",null , "com.fisincorporated.democode.bluetooth.ClassicBluetoothDiscoveryFragment", null));
         addItem(new DemoTopicInfo("List/Search for BT devices", "com.fisincorporated.democode.bluetooth.ListSearchBluetoothActivity", null, null));
-        addItem(new DemoTopicInfo("Ble Scan", "com.fisincorporated.democode.demoui.DemoGenericActivity","com.fisincorporated.democode.bluetooth.BleScanFragment", null));
-        addItem(new DemoTopicInfo("HeartRate Peripheral(Server)", "com.fisincorporated.democode.demoui.DemoGenericActivity","com.fisincorporated.democode.bluetooth.BleHeartRatePeripheralFragment", null));
+        addItem(new DemoTopicInfo("Ble Scan",null ,"com.fisincorporated.democode.bluetooth.BleScanFragment", null));
+        addItem(new DemoTopicInfo("HeartRate Peripheral(Server)",null ,"com.fisincorporated.democode.bluetooth.BleHeartRatePeripheralFragment", null));
 
     }
 }

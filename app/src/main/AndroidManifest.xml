@@ -55,17 +55,16 @@
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
-
         <activity
-            android:name=".ItemListActivity"
+            android:name=".oldcodetemplates.ItemListActivity"
             android:label="@string/title_item_list"
-            android:parentActivityName=".FunctionListActivity"
+            android:parentActivityName=".oldcodetemplates.FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
+                android:value=".oldcodetemplates.FunctionListActivity" />
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
@@ -84,43 +83,57 @@
                 android:value="splitActionBarWhenNarrow" />
         </activity>
 
+        <activity
+            android:name=".ui.CollapsingToolBarActivity"
+            android:parentActivityName=".demoui.DemoListActivity"
+            android:uiOptions="splitActionBarWhenNarrow"
+            >
+
+            <!-- Parent activity meta-data to support API level 7+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".demoui.DemoListActivity" />
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+        </activity>
         <!-- Following activities are basically obsolete and will be (maybe) replaced with demo versions -->
         <activity
-            android:name=".ActivityTemplate"
-            android:parentActivityName=".FunctionListActivity"
+            android:name=".oldcodetemplates.ActivityTemplate"
+            android:parentActivityName=".oldcodetemplates.FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
+                android:value=".oldcodetemplates.FunctionListActivity" />
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
             android:name=".handlingxml.ActivityForParserOutput"
-            android:parentActivityName=".FunctionListActivity"
+            android:parentActivityName=".oldcodetemplates.FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
+                android:value=".oldcodetemplates.FunctionListActivity" />
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
-            android:name=".ActivityWithFragmentTemplate"
+            android:name=".oldcodetemplates.ActivityWithFragmentTemplate"
             android:label="@string/title_activity_activity_with_fragment_template"
-            android:parentActivityName=".FunctionListActivity"
+            android:parentActivityName=".oldcodetemplates.FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
+                android:value=".oldcodetemplates.FunctionListActivity" />
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
@@ -128,41 +141,41 @@
 
         <!-- com.fisincorporated.democode.threads.ThreadListActivity -->
         <activity
-            android:name=".FunctionListActivity"
-            android:parentActivityName=".FunctionListActivity"
+            android:name=".oldcodetemplates.FunctionListActivity"
+            android:parentActivityName=".oldcodetemplates.FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
+                android:value=".oldcodetemplates.FunctionListActivity" />
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
             android:name=".contentprovider.ContactsActivity"
-            android:parentActivityName=".FunctionListActivity"
+            android:parentActivityName=".oldcodetemplates.FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
+                android:value=".oldcodetemplates.FunctionListActivity" />
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
         <activity
-            android:name=".ItemDetailActivity"
+            android:name=".oldcodetemplates.ItemDetailActivity"
             android:label="@string/title_item_detail"
-            android:parentActivityName=".FunctionListActivity"
+            android:parentActivityName=".oldcodetemplates.FunctionListActivity"
             android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FunctionListActivity" />
+                android:value=".oldcodetemplates.FunctionListActivity" />
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
@@ -184,11 +197,7 @@
             android:name=".bluetooth.BluetoothDemoService"
             android:enabled="true"
             android:exported="false"></service>
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>

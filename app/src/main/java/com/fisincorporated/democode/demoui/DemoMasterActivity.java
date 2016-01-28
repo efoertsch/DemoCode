@@ -3,12 +3,10 @@ package com.fisincorporated.democode.demoui;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 
 import com.fisincorporated.democode.R;
 import com.fisincorporated.interfaces.IDemoCallbacks;
@@ -20,20 +18,16 @@ import com.fisincorporated.utility.Utility;
  */
 public abstract class DemoMasterActivity extends AppCompatActivity implements IDemoCallbacks  {
     private static final String TAG = DemoMasterActivity.class.getSimpleName();
-    public static final String FRAGMENT_CLASS_NAME = "com.fisincorporated.democode.FRAGMENT_CLASS_NAME";
-    public static final String FRAGMENT_TITLE_BAR_NAME = "com.fisincorporated.democode.FRAGMENT_TITLE_BAR_NAME";
     protected String fragmentClassName;
-    protected String actionBarTitle;
+    protected String toolBarTitle;
     private AlertDialog mErrorAlertDialog;
     protected int mExitAnimation;
     protected int mEnterAnimation;
 
-    protected ActionBar actionBar;
-
+    protected ActionBar mActionBar;
+    protected Toolbar mToolbar;
     //private SearchView searchView = null;
     //private SearchManager searchManager = null;
-
-    protected abstract Fragment createFragment();
 
     //added for tablet
 
@@ -44,27 +38,10 @@ public abstract class DemoMasterActivity extends AppCompatActivity implements ID
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // added for master/detail fragments as on tablet
-        //setContentView(R.layout.activity_fragment);
-        // if for v11 and above just getFragmentMananger rather than getSupportFragmentManager()
         setContentView(getLayoutResId());
-        lookForArguments(savedInstanceState);
-        // do whatever needed for action bar https://developer.android.com/guide/topics/ui/actionbar.html#SplitBar
-        actionBar = getSupportActionBar();
-        if (actionBarTitle != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
 
     }
 
-    private void lookForArguments(Bundle savedInstanceState) {
-        if (getIntent() != null) {
-            fragmentClassName = getIntent().getStringExtra(FRAGMENT_CLASS_NAME);
-            actionBarTitle = getIntent().getStringExtra(FRAGMENT_TITLE_BAR_NAME);
-        }
-//        if (savedInstanceState != null) {
-//            // nothing yet
-//        }
-    }
 
     /**
      * Save important values over orientation change
@@ -78,39 +55,60 @@ public abstract class DemoMasterActivity extends AppCompatActivity implements ID
     }
 
 
+//    /**
+//     * IDemoCallBacks method
+//     * Create and display the fragment saved in the bundle. The fragment is displayed in the
+//     * 'master' fragment
+//     * @param fragmentBundle
+//     */
+//    @Override
+//    public void createAndDisplayFragment(Bundle fragmentBundle) {
+//        Fragment fragment;
+//        String fragmentClassName = fragmentBundle.getString(DemoDrillDownFragment.NEXT_FRAGMENT);
+//        if (fragmentClassName == null) {
+//            Log.d(TAG, "createAndDisplayFragment called but no DemoDrillDownFragment.NEXT_FRAGMENT string found in bundle");
+//            return;
+//        }
+//
+//        try {
+//            Class<?> demoClass = Class.forName(fragmentClassName);
+//            fragment = (Fragment) demoClass.newInstance();
+//            fragment.setArguments(fragmentBundle);
+//        } catch (ClassNotFoundException cnfe) {
+//            return;
+//        } catch (InstantiationException e) {
+//            return;
+//        } catch (IllegalAccessException e) {
+//            return;
+//        }
+//        FragmentManager fm = getSupportFragmentManager();
+//        FragmentTransaction ft = fm.beginTransaction();
+//        Fragment oldDetail = fm.findFragmentById(R.id.fragmentContainer);
+//        setFragmentTransition(ft);
+//        if (oldDetail != null) {
+//            ft.remove(oldDetail);
+//        }
+//        if (fragment != null) {
+//            ft.add(R.id.fragmentContainer, fragment).addToBackStack(null);
+//        }
+//        ft.commit();
+//    }
+
     @Override
-    public void createAndDisplayFragment(Bundle fragmentBundle) {
-        Fragment fragment;
-        String fragmentClassName = fragmentBundle.getString(DemoDrillDownFragment.NEXT_FRAGMENT);
-        if (fragmentClassName == null) {
-            Log.d(TAG, "createAndDisplayFragment called but no DemoDrillDownFragment.NEXT_FRAGMENT string found in bundle");
-            return;
-        }
+    public void onBackPressed() {
 
-        try {
-            Class<?> demoClass = Class.forName(fragmentClassName);
-            fragment = (Fragment) demoClass.newInstance();
-            fragment.setArguments(fragmentBundle);
-        } catch (ClassNotFoundException cnfe) {
-            return;
-        } catch (InstantiationException e) {
-            return;
-        } catch (IllegalAccessException e) {
-            return;
-        }
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        Fragment oldDetail = fm.findFragmentById(R.id.fragmentContainer);
-        setFragmentTransition(ft);
-        if (oldDetail != null) {
-            ft.remove(oldDetail);
-        }
-        if (fragment != null) {
-            ft.add(R.id.fragmentContainer, fragment).addToBackStack(null);
-        }
-        ft.commit();
+        doExitTransition();
+        super.onBackPressed();
+//        int count = getSupportFragmentManager().getBackStackEntryCount();
+//
+//        if (count <= 1) {
+//            super.onBackPressed();
+//
+//        } else {
+//            getSupportFragmentManager().popBackStack();
+//        }
+
     }
-
 
     // TODO add 5.0+ transitions
     // For nice overview of 5.0+ transitions
@@ -120,11 +118,6 @@ public abstract class DemoMasterActivity extends AppCompatActivity implements ID
                 mExitAnimation);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        doExitTransition();
-    }
 
 
     //TODO add option to change transitions

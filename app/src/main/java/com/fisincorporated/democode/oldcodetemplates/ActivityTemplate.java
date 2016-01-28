@@ -1,10 +1,12 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.oldcodetemplates;
  
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+
+import com.fisincorporated.democode.R;
 
 // from Wrox Professional Android 4 Professional Development book
 // This verison is for pre-version 11 (no frames)

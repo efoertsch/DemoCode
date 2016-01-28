@@ -1,5 +1,6 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.oldcodetemplates;
 
+import com.fisincorporated.democode.R;
 import com.fisincorporated.interfaces.IHandleSelectedAction;
 
 import android.app.Activity;
