@@ -17,7 +17,7 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.fisincorporated.democode.MasterFragment;
+import com.fisincorporated.democode.oldcodetemplates.MasterFragment;
 import com.fisincorporated.democode.R;
 
 import java.util.ArrayList;

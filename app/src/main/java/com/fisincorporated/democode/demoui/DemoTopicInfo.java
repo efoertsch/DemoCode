@@ -8,9 +8,24 @@ import android.os.Parcelable;
  * another list (demoListClassName is not null)
  */
 public class DemoTopicInfo implements Parcelable {
+	/**
+	 * General description of this topic. May be used as subheader text
+	 */
 	private String description;
+	/**
+	 * Activity used to display the topic. Assign only if you want app to create this activity
+	 * and display the topic fragment. If not assigned the fragment will be displayed with existing
+	 * activity
+	 */
 	private String activity;
+	/**
+	 * Fragment to be created to show demo
+	 */
 	private String fragment;
+	/**
+	 * A DemoTopicList. Assigned if the demo topic is another list of topics
+	 *
+	 */
 	private String demoListClassName;
 
 	public DemoTopicInfo(String description, String activity, String fragment,

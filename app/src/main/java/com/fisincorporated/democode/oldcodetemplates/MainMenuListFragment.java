@@ -1,4 +1,4 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.oldcodetemplates;
 
 
 import java.util.SortedMap;

@@ -75,7 +75,8 @@
     <string name="slide_up_from_bottom">Slide up from bottom</string>
     <string name="exit_animation">Exit Animation</string>
     <string name="enter_animation">Enter Animation</string>
-
+    <string name="title_appcompatitem_list">AppCompatItems</string>
+    <string name="title_appcompatitem_detail">AppCompatItem Detail</string>
 
 
 </resources>

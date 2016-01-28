@@ -13,6 +13,7 @@ import com.fisincorporated.democode.broadcastreceiver.BroadcastReceiverDemo;
 
 public class IntentServiceFragment extends ThreadDemoFragment {
 	private static final String TAG = "IntentServiceFragment";
+	private static final String FRAGMENT_TITLE = "IntentService";
 	private int objectCount = 0;
 
 	// Create instance of BroadcastReceieverDemo to receive broadcasts
@@ -52,6 +53,11 @@ public class IntentServiceFragment extends ThreadDemoFragment {
 			}
 		}
 	};
+
+	@Override
+	protected String getFragmentTitle() {
+		return FRAGMENT_TITLE;
+	}
 
 	@Override
 	protected void doStart() {
@@ -94,25 +100,25 @@ public class IntentServiceFragment extends ThreadDemoFragment {
 		intent.putExtra(IntentServiceDemo.TIME_PERIOD, 10);
 		intent.putExtra(IntentServiceDemo.REQUEST_NAME, ++objectCount + "");
 		getActivity().startService(intent);
-		tvStatusArea.append("Called IntentServiceDemo for request " + objectCount
-				+ lineSeparator);
+		mTvStatusArea.append("Called IntentServiceDemo for request " + objectCount
+				+ sLineSeparator);
 		scrollToBottom();
 
 	}
 
 	protected void updateStatus(String serviceRequest, String serviceMessage,
 			int percentComplete) {
-		tvProgressMsg.setText("Processing request" + serviceRequest);
-		progressBar.setProgress(percentComplete);
+		mTvProgressMsg.setText("Processing request" + serviceRequest);
+		mProgressBar.setProgress(percentComplete);
 		if (!serviceMessage.equals("")) {
-			tvStatusArea.append(serviceMessage + lineSeparator);
+			mTvStatusArea.append(serviceMessage + sLineSeparator);
 			scrollToBottom();
 		}
 
 	}
 
 	private void cancelService() {
-		tvStatusArea.append("Stopping IntentServiceDemo" + lineSeparator);
+		mTvStatusArea.append("Stopping IntentServiceDemo" + sLineSeparator);
 		scrollToBottom();
 		getActivity().stopService(
 				new Intent(getActivity(), IntentServiceDemo.class));

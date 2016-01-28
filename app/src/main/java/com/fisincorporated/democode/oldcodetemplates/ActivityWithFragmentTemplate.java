@@ -1,4 +1,4 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.oldcodetemplates;
 
 
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
+
+import com.fisincorporated.democode.R;
 
 //from Wrox Professional Android 4 Professional Development book with some modifications 
 //This verison supports version 8(?) through current versions via support library

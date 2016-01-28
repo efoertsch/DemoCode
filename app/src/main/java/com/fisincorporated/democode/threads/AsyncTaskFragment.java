@@ -2,12 +2,8 @@ package com.fisincorporated.democode.threads;
 
 import java.util.ArrayList;
 
-import com.fisincorporated.democode.R;
-import com.fisincorporated.utility.ThreadDemoObject;
-
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 import android.view.View.OnClickListener;
 
 // Loosely based on various code in Android Programming - The Big Nerd Ranch Guide
@@ -15,14 +11,20 @@ import android.view.View.OnClickListener;
 public class AsyncTaskFragment extends ThreadDemoFragment implements OnClickListener {
 	
 	private static final String TAG = "AsyncTaskFragment";
+    private static final String FRAGMENT_TITLE = "AsyncTask";
 	AsyncTaskDemo asyncTaskDemo = null;
 
 	// The following are called by the onClick() method in ThreadDemoFragment
-	  
-	protected void doStart() {
+
+    @Override
+    protected String getFragmentTitle() {
+        return FRAGMENT_TITLE;
+    }
+
+    protected void doStart() {
 		asyncTaskDemo = new AsyncTaskDemo();
-		startButton.setEnabled(false);
-		cancelButton.setEnabled(true);
+		mStartButton.setEnabled(false);
+		mCancelButton.setEnabled(true);
 		asyncTaskDemo.execute("Parm1", "Parm2", "Parm3", "Parm4");
 	}
  
@@ -81,9 +83,9 @@ public class AsyncTaskFragment extends ThreadDemoFragment implements OnClickList
 				// Not really encouraged through as maintenace of this sort of thing can
 				// get out of hand if widely used. 
 				// http://developer.android.com/guide/components/processes-and-threads.html
-				tvStatusArea.post(new Runnable() {
+				mTvStatusArea.post(new Runnable() {
                 public void run() {
-               	 tvStatusArea.append("Processing on parm: " + finalParm + lineSeparator );
+               	 mTvStatusArea.append("Processing on parm: " + finalParm + sLineSeparator);
                 }
             });
 				// see if need to quit. Did something call AsyncTask.cancel(false)
@@ -92,9 +94,9 @@ public class AsyncTaskFragment extends ThreadDemoFragment implements OnClickList
 				// try to avoid this option
 				// if cancelled onPostExecute won't be called.
 				if (isCancelled()) {
-					tvStatusArea.post(new Runnable() {
+					mTvStatusArea.post(new Runnable() {
 	                public void run() {
-	               	 tvStatusArea.append("AsyncTask cancelled " + lineSeparator );
+	               	 mTvStatusArea.append("AsyncTask cancelled " + sLineSeparator);
 	                }
 	            });
 					break;
@@ -115,10 +117,10 @@ public class AsyncTaskFragment extends ThreadDemoFragment implements OnClickList
 		public void onProgressUpdate(String ... params) {
 			String process = params[0];
 			String progress = params[1];
-			tvProgressMsg.setText("Processing " + process);
+			mTvProgressMsg.setText("Processing " + process);
 			scrollToBottom();
 			 try{
-				progressBar.setProgress(Integer.parseInt(progress));
+				mProgressBar.setProgress(Integer.parseInt(progress));
 			 }
 			 catch(NumberFormatException nfe){
 				 Log.e(TAG,"NumberFormatException caught trying to convert " + progress + " to integer");
@@ -129,13 +131,13 @@ public class AsyncTaskFragment extends ThreadDemoFragment implements OnClickList
 		// It receives the returned ArrayList<Object> from doInBackground()
 		@Override
 		protected void onPostExecute(ArrayList<String> items) {
-			tvStatusArea.append( lineSeparator );
+			mTvStatusArea.append(sLineSeparator);
 			for (int i = 0 ; i < items.size();++i){
-				tvStatusArea.append(items.get(i)  + lineSeparator );
+				mTvStatusArea.append(items.get(i)  + sLineSeparator);
 				scrollToBottom();
 			}
-			startButton.setEnabled(true);
-			cancelButton.setEnabled(false);
+			mStartButton.setEnabled(true);
+			mCancelButton.setEnabled(false);
 		}
 
 	

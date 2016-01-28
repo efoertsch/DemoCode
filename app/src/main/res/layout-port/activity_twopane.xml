@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:weightSum="4">
 
-    <include layout="@layout/sub_actionbar_header" />
+    <!-- use toolbar with AppCompatActivity and no actionbar theme -->
+    <include layout="@layout/toolbar" />
 
     <FrameLayout
         android:id="@+id/fragmentContainer"
@@ -14,8 +15,6 @@
         android:layout_weight="1" />
 
     <include layout="@layout/divider_horizontal" />
-
-    <include layout="@layout/fragment_header_text" />
 
     <FrameLayout
         android:id="@+id/detailFragmentContainer"

@@ -16,5 +16,8 @@
     <item name="black_54pct_transparent" type="color">#89000000</item>
 
 
+    <color name="window_background">#FFF5F5F5</color>
+
+
 
 </resources> 

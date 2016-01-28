@@ -1,4 +1,4 @@
-package com.fisincorporated.democode;
+package com.fisincorporated.democode.oldcodetemplates;
 
 //import de.greenrobot.daoexample.DaoMaster;
 //import de.greenrobot.daoexample.DaoSession;

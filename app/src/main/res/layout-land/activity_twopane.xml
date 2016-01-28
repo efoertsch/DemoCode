@@ -2,54 +2,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:weightSum="4">
+    android:orientation="vertical">
 
-    <!-- Not sure why but could not put sub_actionbar and fragment in LinearLayout as fragment
-         was not showing -->
-    <RelativeLayout
-        android:layout_width="0dp"
+    <!-- use toolbar with AppCompatActivity and no actionbar theme -->
+    <include layout="@layout/toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:orientation="horizontal"
+        android:weightSum="4">
 
         <RelativeLayout
-            android:id="@+id/rlsub_actionbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-            <include layout="@layout/sub_actionbar_header" />
-
+            <FrameLayout
+                android:id="@+id/fragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </RelativeLayout>
 
-        <FrameLayout
-            android:id="@+id/fragmentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/rlsub_actionbar" />
-    </RelativeLayout>
-
-    <include layout="@layout/divider_vertical" />
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="3">
+        <include layout="@layout/divider_vertical" />
 
         <RelativeLayout
-            android:id="@+id/rlDetailFragmentHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
 
-            <include
-                android:id="@+id/tvFragmentHeaderText"
-                layout="@layout/sub_actionbar_header" />
+            <RelativeLayout
+                android:id="@+id/rlDetailFragmentHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/detailFragmentContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rlDetailFragmentHeader" />
         </RelativeLayout>
-
-        <FrameLayout
-            android:id="@+id/detailFragmentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/rlDetailFragmentHeader" />
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>
 

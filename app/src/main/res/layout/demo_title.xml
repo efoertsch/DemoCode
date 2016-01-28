@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tvActionBarSubHeader"
-    style="@style/SubActionBar"
+    android:id="@+id/tvDemoTitle"
+    style="@style/Subheader"
     android:text="Medium Text"
-    android:visibility="gone" />
+    android:translationZ="2dp" />
+
 
 
