@@ -90,8 +90,11 @@ public class Utility {
     }
 
     private static final String SHARED_PREFERENCES = "shared_preferences";
-    public static final String EXIT_ANIMATION = "com.fisincorporated.EXIT_ANIMATION";
-    public static final String ENTER_ANIMATION = "com.fisincorporated.ENTER_ANIMATION";
+    public static final String FORWARD_EXIT_ANIMATION = "com.fisincorporated.FORWARD_EXIT_ANIMATION";
+    public static final String FORWARD_ENTER_ANIMATION = "com.fisincorporated.FORWARD_ENTER_ANIMATION";
+
+    public static final String BACK_EXIT_ANIMATION = "com.fisincorporated.BACK_EXIT_ANIMATION";
+    public static final String BACK_ENTER_ANIMATION = "com.fisincorporated.BACK_ENTER_ANIMATION";
 
     public static void storeAnimation(Context context, String key, @AnimRes int animRes) {
         SharedPreferences prefs = context

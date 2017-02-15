@@ -23,12 +23,17 @@ import java.util.Arrays;
  * Options to set exit/enter animations
  */
 public class TransitionOptions extends DemoDrillDownFragment {
+    private RadioButton mRbtnForwardTransition;
+    private RadioButton mRbtnBackTransition;
     private RadioButton mRbtnExitAnimation;
     private RadioButton mRbtnEnterAnimation;
+
     private ArrayList<AnimationType> mAnimationTypes;
     private AnimationOptionAdapter mAnimationOptionAdapter;
-    private int mExitAnimation;
-    private int mEnterAnimation;
+    private int mForwardExitAnimation;
+    private int mForwardEnterAnimation;
+    private int mBackExitAnimation;
+    private int mBackEnterAnimation;
 
 
     public TransitionOptions() {
@@ -57,24 +62,37 @@ public class TransitionOptions extends DemoDrillDownFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView =  inflater.inflate(R.layout.fragment_transition_options, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_transition_options, container, false);
+        mRbtnForwardTransition = (RadioButton) rootView.findViewById(R.id.btnForwardTransition);
+        // Since you can't define onClick in XML used in Fragments, define onClickListener here
+        mRbtnForwardTransition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onRadioButtonClicked(v);
+            }
+        });
+        mRbtnBackTransition = (RadioButton) rootView.findViewById(R.id.rbtnBackTransition);
+        mRbtnBackTransition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onRadioButtonClicked(v);
+            }
+        });
         mRbtnExitAnimation = (RadioButton) rootView.findViewById(R.id.rbtnExitAnimation);
-        mRbtnExitAnimation.setChecked(true);
         mRbtnExitAnimation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onExitEnterButtonClick(v);
+                onRadioButtonClicked(v);
             }
         });
         mRbtnEnterAnimation = (RadioButton) rootView.findViewById((R.id.rbtnEnterAnimation));
         mRbtnEnterAnimation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onExitEnterButtonClick(v);
+                onRadioButtonClicked(v);
             }
         });
 
-        mRbtnEnterAnimation = (RadioButton) rootView.findViewById(R.id.rbtnEnterAnimation);
         ListView lvAnimation = (ListView) rootView.findViewById(R.id.lvAnimation);
         lvAnimation.addFooterView(new View(getActivity().getBaseContext()),
                 null, true);
@@ -88,18 +106,33 @@ public class TransitionOptions extends DemoDrillDownFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                if (mRbtnExitAnimation.isChecked()) {
-                    mExitAnimation = mAnimationTypes.get(position).getAnimationResourceId();
+                if (mRbtnForwardTransition.isChecked()) {
+                    // defining forward transition
+                    if (mRbtnExitAnimation.isChecked()) {
+                        // exit transition
+                        mForwardExitAnimation = mAnimationTypes.get(position).getAnimationResourceId();
+                    } else {
+                        // enter transition
+                        mForwardEnterAnimation = mAnimationTypes.get(position).getAnimationResourceId();
+                    }
                 } else {
-                    mEnterAnimation = mAnimationTypes.get(position).getAnimationResourceId();
+                    // back transition
+                    if (mRbtnExitAnimation.isChecked()) {
+                        // exit transition
+                        mBackExitAnimation = mAnimationTypes.get(position).getAnimationResourceId();
+                    } else {
+                        // forward transition
+                        mBackEnterAnimation = mAnimationTypes.get(position).getAnimationResourceId();
+                    }
                 }
+
                 mAnimationOptionAdapter.notifyDataSetChanged();
 
             }
 
         });
 
-        Button btnSave = (Button) rootView.findViewById(R.id.btnSave) ;
+        Button btnSave = (Button) rootView.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,18 +144,11 @@ public class TransitionOptions extends DemoDrillDownFragment {
     }
 
     /**
-     * Called via xml defined in layout
-     *
-     * @param view  either exit or enter radio button
+     * Just case selected animations to be updated
+     * @param view either exit or enter radio button
      */
-    public void onExitEnterButtonClick(View view) {
-        if (view == mRbtnExitAnimation) {
-            mRbtnExitAnimation.setChecked(true);
-            mRbtnEnterAnimation.setChecked(false);
-        } else {
-            mRbtnExitAnimation.setChecked(false);
-            mRbtnEnterAnimation.setChecked(true);
-        }
+    public void onRadioButtonClicked(View view) {
+
         mAnimationOptionAdapter.notifyDataSetChanged();
     }
 
@@ -132,14 +158,18 @@ public class TransitionOptions extends DemoDrillDownFragment {
 
     public void getAnimationsPreferences() {
         Context context = getActivity();
-        mExitAnimation = Utility.getAnimationPreference(context, Utility.EXIT_ANIMATION, 0);
-        mEnterAnimation = Utility.getAnimationPreference(context, Utility.ENTER_ANIMATION, 0);
+        mForwardExitAnimation = Utility.getAnimationPreference(context, Utility.FORWARD_EXIT_ANIMATION, 0);
+        mForwardEnterAnimation = Utility.getAnimationPreference(context, Utility.FORWARD_ENTER_ANIMATION, 0);
+        mBackExitAnimation = Utility.getAnimationPreference(context, Utility.BACK_EXIT_ANIMATION, 0);
+        mBackEnterAnimation = Utility.getAnimationPreference(context, Utility.BACK_ENTER_ANIMATION, 0);
     }
 
     public void saveAnimationPreferences() {
         Context context = getActivity();
-        Utility.storeAnimation(context, Utility.EXIT_ANIMATION, mExitAnimation);
-        Utility.storeAnimation(context, Utility.ENTER_ANIMATION, mEnterAnimation);
+        Utility.storeAnimation(context, Utility.FORWARD_EXIT_ANIMATION, mForwardExitAnimation);
+        Utility.storeAnimation(context, Utility.FORWARD_ENTER_ANIMATION, mForwardEnterAnimation);
+        Utility.storeAnimation(context, Utility.BACK_EXIT_ANIMATION, mBackExitAnimation);
+        Utility.storeAnimation(context, Utility.BACK_ENTER_ANIMATION, mBackEnterAnimation);
     }
 
     private class AnimationOptionAdapter extends
@@ -172,13 +202,22 @@ public class TransitionOptions extends DemoDrillDownFragment {
             AnimationType animationType = this.getItem(position);
             viewHolder.rbtnAnimationOption.setText(animationType.getAnimationDescriptionResourceId());
 
+            if (mRbtnForwardTransition.isChecked()) {
+                // Forward transition
+                if (mRbtnExitAnimation.isChecked()) {
+                    viewHolder.rbtnAnimationOption.setChecked(animationType.getAnimationResourceId() == mForwardExitAnimation);
+                } else { // EnterAnimation checked
+                    viewHolder.rbtnAnimationOption.setChecked(animationType.getAnimationResourceId() == mForwardEnterAnimation);
+                }
+            } else {
+                // must be backward
+                if (mRbtnExitAnimation.isChecked()) {
+                    viewHolder.rbtnAnimationOption.setChecked(animationType.getAnimationResourceId() == mBackExitAnimation);
+                } else { // EnterAnimation checked
+                    viewHolder.rbtnAnimationOption.setChecked(animationType.getAnimationResourceId() == mBackEnterAnimation);
+                }
+            }
 
-            if (mRbtnExitAnimation.isChecked()) {
-                    viewHolder.rbtnAnimationOption.setChecked(animationType.getAnimationResourceId() == mExitAnimation);
-            }
-            else{ // EnterAnimation checked
-                 viewHolder.rbtnAnimationOption.setChecked(animationType.getAnimationResourceId() == mEnterAnimation);
-            }
             return rowView;
         }
 

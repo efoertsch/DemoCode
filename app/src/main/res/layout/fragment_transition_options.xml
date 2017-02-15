@@ -1,54 +1,82 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AppTheme.MaterialMargins"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fisincorporated.democode.ui.TransitionOptions"
-    style="@style/AppTheme.MaterialMargins">
+    tools:context="com.fisincorporated.democode.ui.TransitionOptions">
 
 
-        <LinearLayout
-            android:id="@+id/llEnterExitButtons"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="2"
-            android:layout_marginBottom="@dimen/listview_row_margin">
+    <RadioGroup
+        android:id="@+id/rgForwardBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:weightSum="2">
 
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/exit_animation"
-                android:id="@+id/rbtnExitAnimation"
-                android:layout_weight="1"
-                android:textSize="@dimen/standard_text_size"
-                />
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/enter_animation"
-                android:id="@+id/rbtnEnterAnimation"
-                android:layout_weight="1"
-                android:textSize="@dimen/standard_text_size"
-                />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btnSave"
+        <RadioButton
+            android:id="@+id/btnForwardTransition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="@string/save" />
+            android:layout_weight="1"
+            android:checked="true"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/forward_transition" />
 
-        <ListView
-            android:id="@+id/lvAnimation"
+        <RadioButton
+            android:id="@+id/rbtnBackTransition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/button"
-            android:layout_below="@+id/llEnterExitButtons"
-            android:layout_gravity="center_horizontal|top"
-            />
+            android:layout_weight="1"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/backward_transition" />
+    </RadioGroup>
 
-    </RelativeLayout>
+    <RadioGroup
+        android:id="@+id/rgExitEnter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rgForwardBack"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_marginTop="@dimen/text_margin">
+
+        <RadioButton
+            android:id="@+id/rbtnExitAnimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/exit_animation"
+            android:textSize="@dimen/standard_text_size" />
+
+        <RadioButton
+            android:id="@+id/rbtnEnterAnimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onRadioButtonClicked"
+            android:text="@string/enter_animation"
+            android:textSize="@dimen/standard_text_size" />
+    </RadioGroup>
+
+    <ListView
+        android:id="@+id/lvAnimation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_margin"
+        android:layout_above="@+id/btnSave"
+        android:layout_below="@+id/rgExitEnter"
+        android:layout_gravity="center_horizontal|top" />
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/save" />
+
+
+</RelativeLayout>

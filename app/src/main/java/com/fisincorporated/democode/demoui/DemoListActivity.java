@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.fisincorporated.democode.R;
 import com.fisincorporated.utility.GlobalConstants;
-import com.fisincorporated.utility.Utility;
 
 
 /**
@@ -83,13 +82,10 @@ public class DemoListActivity extends DemoMasterActivity {
 
         createAndDisplayDemoListFragment(mMainFragmentTitle, mDemoListJson);
 
-        getExitEnterAnimations();
+        getAnimationsPreferences();
+
     }
 
-    private void getExitEnterAnimations() {
-        mExitAnimation = Utility.getAnimationPreference(this, Utility.EXIT_ANIMATION, 0);
-        mEnterAnimation = Utility.getAnimationPreference(this, Utility.ENTER_ANIMATION, 0);
-    }
 
     /**
      * Get saved values either from intent or from savedInstanceState

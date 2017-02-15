@@ -77,6 +77,13 @@
     <string name="enter_animation">Enter Animation</string>
     <string name="title_appcompatitem_list">AppCompatItems</string>
     <string name="title_appcompatitem_detail">AppCompatItem Detail</string>
+    <string name="forward_transition">Forward Transition</string>
+    <string name="backward_transition">Backward Transition</string>
+
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="github_democode">https://github.com/efoertsch/DemoCode</string>
 
 
 </resources>

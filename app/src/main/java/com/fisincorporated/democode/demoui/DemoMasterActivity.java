@@ -21,8 +21,10 @@ public abstract class DemoMasterActivity extends AppCompatActivity implements ID
     protected String fragmentClassName;
     protected String toolBarTitle;
     private AlertDialog mErrorAlertDialog;
-    protected int mExitAnimation;
-    protected int mEnterAnimation;
+    protected int mForwardExitAnimation;
+    protected int mForwardEnterAnimation;
+    protected int mBackExitAnimation;
+    protected int mBackEnterAnimation;
 
     protected ActionBar mActionBar;
     protected Toolbar mToolbar;
@@ -114,8 +116,8 @@ public abstract class DemoMasterActivity extends AppCompatActivity implements ID
     // For nice overview of 5.0+ transitions
     // http://www.androiddesignpatterns.com/2014/12/activity-fragment-transitions-in-android-lollipop-part1.html
     protected void doStartTransition() {
-        overridePendingTransition(mEnterAnimation,
-                mExitAnimation);
+        overridePendingTransition(mForwardEnterAnimation,
+                mForwardExitAnimation);
     }
 
 
@@ -123,12 +125,12 @@ public abstract class DemoMasterActivity extends AppCompatActivity implements ID
     //TODO add option to change transitions
     // TODO add 5.0+ transitions
     protected void doExitTransition() {
-        overridePendingTransition(mEnterAnimation,
-                mExitAnimation);
+        overridePendingTransition(mBackEnterAnimation,
+                mBackExitAnimation);
     }
 
     protected void setFragmentTransition(FragmentTransaction ft) {
-        ft.setCustomAnimations(mEnterAnimation, mExitAnimation);
+        ft.setCustomAnimations(mForwardEnterAnimation, mForwardExitAnimation, mBackEnterAnimation,mBackExitAnimation);
     }
 
 // TODO refactor this activity with other demo activities with common code
@@ -159,13 +161,17 @@ public abstract class DemoMasterActivity extends AppCompatActivity implements ID
     }
 
     public void getAnimationsPreferences() {
-        mExitAnimation = Utility.getAnimationPreference(this, Utility.EXIT_ANIMATION, 0);
-        mEnterAnimation = Utility.getAnimationPreference(this, Utility.ENTER_ANIMATION, 0);
+        mForwardExitAnimation = Utility.getAnimationPreference(this, Utility.FORWARD_EXIT_ANIMATION, 0);
+        mForwardEnterAnimation = Utility.getAnimationPreference(this, Utility.FORWARD_ENTER_ANIMATION, 0);
+        mBackExitAnimation = Utility.getAnimationPreference(this, Utility.BACK_EXIT_ANIMATION, 0);
+        mBackEnterAnimation = Utility.getAnimationPreference(this, Utility.BACK_ENTER_ANIMATION, 0);
     }
 
     public void saveAnimationPreferences() {
-        Utility.storeAnimation(this, Utility.EXIT_ANIMATION, mExitAnimation);
-        Utility.storeAnimation(this, Utility.ENTER_ANIMATION, mEnterAnimation);
+        Utility.storeAnimation(this, Utility.FORWARD_EXIT_ANIMATION, mForwardExitAnimation);
+        Utility.storeAnimation(this, Utility.FORWARD_ENTER_ANIMATION, mForwardEnterAnimation);
+        Utility.storeAnimation(this, Utility.BACK_EXIT_ANIMATION, mBackExitAnimation);
+        Utility.storeAnimation(this, Utility.BACK_ENTER_ANIMATION, mBackEnterAnimation);
     }
 
 //uncomment/modify to implement search

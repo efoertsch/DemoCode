@@ -14,6 +14,7 @@ public class ThreadDemoTopicList<T> extends DemoTopicList {
 		addItem(new DemoTopicInfo("AsyncTask", null, "com.fisincorporated.democode.threads.AsyncTaskFragment", null));
 		addItem(new DemoTopicInfo("HandlerThread", null, "com.fisincorporated.democode.threads.HandlerThreadFragment", null));
 		addItem(new DemoTopicInfo("IntentService ", null, "com.fisincorporated.democode.threads.IntentServiceFragment", null));
+		addItem(new DemoTopicInfo("SerialExecuter ", null, "com.fisincorporated.democode.threads.SerialExecutorFragment", null));
 		 
 	}
 

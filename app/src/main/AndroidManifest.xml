@@ -55,6 +55,35 @@
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
+
+        <activity
+            android:name=".ui.DemoNavDrawer"
+            android:parentActivityName=".demoui.DemoListActivity"
+            android:uiOptions="splitActionBarWhenNarrow">
+
+            <!-- Parent activity meta-data to support API level 7+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".demoui.DemoListActivity" />
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+        </activity>
+
+        <activity
+            android:name=".ui.DynamicNavDrawer"
+            android:parentActivityName=".demoui.DemoListActivity"
+            android:uiOptions="splitActionBarWhenNarrow">
+
+            <!-- Parent activity meta-data to support API level 7+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".demoui.DemoListActivity" />
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
+        </activity>
+
         <activity
             android:name=".oldcodetemplates.ItemListActivity"
             android:label="@string/title_item_list"
@@ -82,12 +111,10 @@
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
         </activity>
-
         <activity
             android:name=".ui.CollapsingToolBarActivity"
             android:parentActivityName=".demoui.DemoListActivity"
-            android:uiOptions="splitActionBarWhenNarrow"
-            >
+            android:uiOptions="splitActionBarWhenNarrow">
 
             <!-- Parent activity meta-data to support API level 7+ -->
             <meta-data
@@ -196,7 +223,8 @@
         <service
             android:name=".bluetooth.BluetoothDemoService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false" />
+
 
     </application>
 
