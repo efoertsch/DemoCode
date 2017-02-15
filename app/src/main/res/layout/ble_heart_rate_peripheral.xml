@@ -1,14 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".bluetooth.BleHeartRatePeripheralFragment">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <LinearLayout
         android:id="@+id/rlHeartRate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin">
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/lblHeartRate"
@@ -37,8 +44,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/rlHeartRate"
-        android:layout_marginTop="@dimen/activity_vertical_margin">
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/lblBleClient"
@@ -59,4 +66,5 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
-</RelativeLayout>
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

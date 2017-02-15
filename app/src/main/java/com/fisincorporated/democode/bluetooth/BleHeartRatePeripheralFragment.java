@@ -10,6 +10,8 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fisincorporated.democode.R;
 import com.fisincorporated.democode.bluetoothevents.BleCharacteristicReadRequest;
@@ -51,6 +52,7 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
     private BluetoothGattCharacteristic mHeartRateCharacteristic;
     private BluetoothDevice mClientDevice = null;
 
+    private View fragmentView;
     private EditText mEtHeartRate;
     private TextView mTvConnectedClient;
 
@@ -62,8 +64,8 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.ble_heart_rate_peripheral, container, false);
-        mEtHeartRate = (EditText) view.findViewById(R.id.etHeartRate);
+        fragmentView = inflater.inflate(R.layout.ble_heart_rate_peripheral, container, false);
+        mEtHeartRate = (EditText) fragmentView.findViewById(R.id.etHeartRate);
 
         // For softkeyboard
         mEtHeartRate.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -78,8 +80,8 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
             }
         });
 
-        mTvConnectedClient = (TextView) view.findViewById(R.id.tvConnectedClient);
-        return view;
+        mTvConnectedClient = (TextView) fragmentView.findViewById(R.id.tvConnectedClient);
+        return fragmentView;
     }
 
     @Override
@@ -92,7 +94,8 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
             queueBluetoothRequest(BluetoothDemoService.BLE_START_PERIPHERAL_SERVICE, bluetoothGattServices);
         } else {
             mEtHeartRate.setEnabled(false);
-            Toast.makeText(getActivity(), R.string.must_be_at_api_21, Toast.LENGTH_SHORT).show();
+            showSnackbarMessage(R.string.must_be_at_api_21);
+
         }
     }
 
@@ -207,8 +210,20 @@ public class BleHeartRatePeripheralFragment extends BleDemoFragment {
     @Subscribe
     public void onBleResponseError(BleResponse bleResponse) {
         String errorMsg = "Error sending Ble Response to:" + bleResponse.getDevice().getName();
-        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+        showSnackbarMessage(errorMsg);
         Log.d(TAG, errorMsg);
+    }
+
+    private void showSnackbarMessage(@StringRes int id){
+        showSnackbarMessage(getResources().getString(id));
+    }
+    private void showSnackbarMessage(String message){
+        Snackbar.make(fragmentView, message, Snackbar.LENGTH_INDEFINITE).setAction("Dismiss", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        }).show();
     }
 
 }
